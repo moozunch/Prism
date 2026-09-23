@@ -1,4 +1,4 @@
-# DewaKoding Project Management
+# PRISM - Project Management System
 
 🎉 **Now using Filament 4!** 🎉
 

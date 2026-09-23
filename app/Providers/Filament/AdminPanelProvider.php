@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('PRISM')
             ->login(Login::class)
             ->colors([
                 'primary' => Color::Blue,

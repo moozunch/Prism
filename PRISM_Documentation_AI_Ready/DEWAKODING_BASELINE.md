@@ -1,109 +1,117 @@
-# DewaKoding Baseline
+# DewaKoding Baseline Audit
 
-## Purpose
+## Scope and method
 
-This file records what the selected open-source base already provides before PRISM modification.
+This is a read-only baseline audit of the DewaKoding application before PRISM implementation. No application source, model, migration, route, or configuration file was changed. The audit used the five PRISM planning documents and the checked-in Laravel source, not only the upstream README.
 
-Repository:
-https://github.com/SeptiawanAjiP/dewakoding-project-management
+Repository baseline: Laravel/Filament project-management application adapted from DewaKoding. The deployment rule remains **1 Organization = 1 Deployment = 1 Database**. No shared tenant database is present in the current source.
 
-The repository README currently identifies it as a Laravel Filament 4 project-management application.
+Classification meanings: **EXISTING** satisfies the requirement as-is; **PARTIAL** exists but needs modification; **MISSING** is absent; **CONFLICT** contradicts the PRISM direction; **UNKNOWN** cannot be established from source. Action meanings: **REUSE**, **MODIFY**, **ADD**, **REMOVE**, **REPLACE**, and **INVESTIGATE**.
 
-## Existing capabilities relevant to PRISM
+## Executive findings
 
-- Project management
-- Role-based access control using Filament Shield
-- Team member management with role assignments
-- Ticket statuses
-- Ticket management
-- Assignees
-- Due dates
-- Unique ticket identifiers
-- Epics
-- Comments
-- Kanban board
-- Multi-user assignment
-- Contribution chart
-- Timeline
-- CSV export
-- Leaderboard
-- External dashboard/client portal
-- Google OAuth login
-- Queue/email notifications
+- The reusable technical foundation is strong: Laravel 12, PHP 8.2+, Filament 4, Filament Shield 4, Eloquent, database sessions/queues, policies, projects, project membership, ticket workflow, comments, status history, notifications, dashboard widgets, board, timeline, and exports.
+- PRISM organization management is not implemented. There are no Organization or Division models, tables, resources, pages, or relationships.
+- `Ticket` is a real, cross-cutting domain model, not a UI label. It is referenced by migrations, `Project`, `User`, statuses, priorities, comments, histories, policies, Filament resources/pages/widgets, notifications, exports, and tests. Do not blindly rename it.
+- There is no persisted Attachment model/table. Rich-editor uploads are public files embedded in editor content and are not authorization-aware attachment records.
+- Google OAuth login exists, but Google Calendar and Google Drive integrations do not exist. OAuth login must remain a separate concern.
+- Authentication is Laravel/Filament session authentication with verified email and role gating. JWT is not implemented. The PRISM JWT statement remains an architecture decision, not an implementation task.
+- Existing authorization is meaningful but inconsistent in custom board code. The board still checks removed `tickets.user_id` fields while the current model uses `created_by`.
+- `config/database.php` uses `PDO::MYSQL_ATTR_SSL_CA` for both MySQL and MariaDB connections. This is a PHP compatibility risk and was intentionally not changed.
 
-The repository README also documents Laravel 12, PHP 8.2+, MySQL/PostgreSQL support, and standard Laravel installation.
+## Detailed requirement mapping
 
-## Existing capabilities that need review before keeping
+| PRISM requirement | DewaKoding implementation | Relevant files | Current behavior | Classification | Required action | Notes / risks |
+|---|---|---|---|---|---|---|
+| 1 Organization = 1 Deployment = 1 Database | Normal Laravel deployment and one configured database; no tenant discriminator | [composer.json](../composer.json), [config/database.php](../config/database.php), [database/migrations](../database/migrations) | No `organization_id`, `org_id`, tenant switching, or cross-organization query was found | EXISTING | REUSE | An organization profile record may be added later, but must not become a tenant isolation column |
+| Organization setup and information | No organization domain model or configuration resource | [app/Models](../app/Models), [app/Filament](../app/Filament), [database/migrations](../database/migrations) | No organization name/contact/profile record exists | MISSING | ADD | Add deployment-local configuration only after schema/design decision |
+| Divisions | No Division model, migration, relationship, resource, page, or policy | [app/Models](../app/Models), [database/migrations](../database/migrations) | Members cannot be assigned to a division | MISSING | ADD | No hierarchy requirement is needed; define delete/deactivate rules first |
+| Members / user identity | `User` is the authenticatable Filament user | [app/Models/User.php](../app/Models/User.php), [database/migrations/0001_01_01_000000_create_users_table.php](../database/migrations/0001_01_01_000000_create_users_table.php) | User email is the login identifier; name/email/password/google ID are stored; password uses Laravel `hashed` cast | PARTIAL | MODIFY | No activation/deactivation, division, richer profile, or organization contact separation exists |
+| Authentication | Laravel session auth through Filament panel | [app/Providers/Filament/AdminPanelProvider.php](../app/Providers/Filament/AdminPanelProvider.php), [app/Filament/Pages/Auth/Login.php](../app/Filament/Pages/Auth/Login.php), [app/Models/User.php](../app/Models/User.php) | Login, session, CSRF, password reset, email verification, and profile are provided by Filament/Laravel | EXISTING | REUSE | This satisfies the web application need; do not add JWT without resolving the documented API/client question |
+| JWT authentication statement | No JWT package, guard, token model, or JWT route | [composer.json](../composer.json), [config/auth.php](../config/auth.php), [PRISM_REQUIREMENTS.md](PRISM_REQUIREMENTS.md), [DECISIONS.md](DECISIONS.md) | Current app is not JWT-based | UNKNOWN | INVESTIGATE | Decide whether JWT is needed for an API/client; replacing Filament sessions would be a major architecture change |
+| Required roles | Spatie roles and Shield permissions exist | [database/seeders/RoleSeeder.php](../database/seeders/RoleSeeder.php), [config/filament-shield.php](../config/filament-shield.php) | Seeded roles are `super_admin`, `admin`, and `member` | PARTIAL | MODIFY | Map/replace role semantics to Organization Admin, Division Head, Project Manager, Member after authorization rules are defined |
+| Permissions / server-side RBAC | Filament Shield and Spatie `HasRoles` | [app/Models/User.php](../app/Models/User.php), [config/filament-shield.php](../config/filament-shield.php), [database/seeders/RoleSeeder.php](../database/seeders/RoleSeeder.php) | Resource permissions are generated/seeded and checked through Laravel authorization | PARTIAL | MODIFY | Permission names are ticket-centric; required division/project boundaries are not represented |
+| Filament Shield tenancy | Shield tenant model disabled | [config/filament-shield.php](../config/filament-shield.php) | `tenant_model` is `null`; Shield is not creating application multi-tenancy | EXISTING | REUSE | This aligns with the one-deployment rule |
+| Policies / protected access | Policies exist for projects, tickets, comments, notifications, users, roles, priorities | [app/Policies](../app/Policies) | Project/ticket policies combine permission checks and project membership/assignment checks | PARTIAL | MODIFY | `UserPolicy` lacks a model argument for view/update; custom board methods bypass policy methods and contain stale `user_id` references |
+| Project | `Project` Eloquent model and Filament resource | [app/Models/Project.php](../app/Models/Project.php), [app/Filament/Resources/Projects/ProjectResource.php](../app/Filament/Resources/Projects/ProjectResource.php), [database/migrations/2025_03_02_200055_create_projects_table.php](../database/migrations/2025_03_02_200055_create_projects_table.php) | Stores name, description, ticket prefix, color, dates, pinned date; supports CRUD and project-scoped relations | EXISTING | REUSE | Technical field `ticket_prefix` will need a compatibility decision if UI terminology changes |
+| Project status / dates / progress | Project dates and computed ticket-based progress | [app/Models/Project.php](../app/Models/Project.php), [app/Filament/Resources/Projects/ProjectResource.php](../app/Filament/Resources/Projects/ProjectResource.php) | Progress is completed ticket count divided by total tickets; no explicit project status field | PARTIAL | MODIFY | Document the progress rule before changing it; add project status only if required by the approved model |
+| Project team | `project_members` many-to-many relationship | [app/Models/Project.php](../app/Models/Project.php), [app/Models/User.php](../app/Models/User.php), [app/Filament/Resources/Projects/RelationManagers/MembersRelationManager.php](../app/Filament/Resources/Projects/RelationManagers/MembersRelationManager.php), [database/migrations/2025_03_02_200109_create_project_members_table.php](../database/migrations/2025_03_02_200109_create_project_members_table.php) | Members can be added/removed and used for project access; no responsibility/role pivot field | PARTIAL | MODIFY | Reuse membership; define Project Manager/responsibility semantics and notification authorization |
+| Task / Ticket | `Ticket` model, table, resource, relations, policies, pages, exports, and tests | [app/Models/Ticket.php](../app/Models/Ticket.php), [app/Filament/Resources/Tickets/TicketResource.php](../app/Filament/Resources/Tickets/TicketResource.php), [database/migrations/2025_03_02_200246_create_tickets_table.php](../database/migrations/2025_03_02_200246_create_tickets_table.php) | Ticket has project, status, priority, name, description, start/due dates, UUID, epic, creator, assignees, comments, and histories | CONFLICT | INVESTIGATE | PRISM says Task, but a global rename would affect foreign keys, notifications, UI routes, policies, exports, and tests. First choose retained model/UI alias, compatibility migration, or true migration |
+| Ticket status | `TicketStatus` belongs to project and tickets | [app/Models/TicketStatus.php](../app/Models/TicketStatus.php), [app/Filament/Resources/Projects/RelationManagers/TicketStatusesRelationManager.php](../app/Filament/Resources/Projects/RelationManagers/TicketStatusesRelationManager.php), [database/migrations/2025_03_02_200213_create_ticket_statuses_table.php](../database/migrations/2025_03_02_200213_create_ticket_statuses_table.php) | Per-project ordered, colored statuses with `is_completed`; status changes create history rows | PARTIAL | MODIFY | Concept is reusable; transition terminology and progress rules need formalization |
+| Assignment | `ticket_users` many-to-many relation | [app/Models/Ticket.php](../app/Models/Ticket.php), [app/Filament/Resources/Tickets/TicketResource.php](../app/Filament/Resources/Tickets/TicketResource.php), [database/migrations/2025_06_24_212547_add_ticket_users_table_and_created_by_column.php](../database/migrations/2025_06_24_212547_add_ticket_users_table_and_created_by_column.php) | Multiple project members can be assigned; assignment is constrained in the resource form | EXISTING | REUSE | Verify policy behavior for assignment changes and add authorization tests before migration |
+| Deadline / priority | `due_date`, `start_date`, and `TicketPriority` | [app/Models/Ticket.php](../app/Models/Ticket.php), [app/Models/TicketPriority.php](../app/Models/TicketPriority.php), [database/migrations/2025_07_04_164558_add_priority_id_to_tickets_table.php](../database/migrations/2025_07_04_164558_add_priority_id_to_tickets_table.php) | Forms and dashboard expose dates, priority, overdue counts, and sorting | EXISTING | REUSE | PRISM terminology can be introduced in UI after Ticket migration decision |
+| Comments | `TicketComment` model/resource and notifications | [app/Models/TicketComment.php](../app/Models/TicketComment.php), [app/Filament/Resources/TicketComments/TicketCommentResource.php](../app/Filament/Resources/TicketComments/TicketCommentResource.php), [database/migrations/2025_04_11_173545_create_ticket_comments_table.php](../database/migrations/2025_04_11_173545_create_ticket_comments_table.php) | Author, timestamp, rich text, create/update flow, and in-app notification exist | PARTIAL | MODIFY | Ticket coupling must be handled safely; notification message uses `$ticket->title` although the model field is `name` |
+| Attachments | Filament RichEditor file attachments | [app/Filament/Resources/Tickets/TicketResource.php](../app/Filament/Resources/Tickets/TicketResource.php), [app/Filament/Resources/Projects/ProjectResource.php](../app/Filament/Resources/Projects/ProjectResource.php), [config/filesystems.php](../config/filesystems.php) | Files are uploaded to public `attachments` storage and embedded in rich content | MISSING | ADD | No attachment table/model/relationship/policy/resource; public URLs may expose files if paths are known |
+| Activity history | `TicketHistory` records ticket status changes | [app/Models/TicketHistory.php](../app/Models/TicketHistory.php), [app/Filament/Widgets/RecentActivityTable.php](../app/Filament/Widgets/RecentActivityTable.php), [database/migrations/2025_03_28_144500_create_ticket_histories_table.php](../database/migrations/2025_03_28_144500_create_ticket_histories_table.php) | Timeline/activity widget shows status-change rows with actor and timestamp | PARTIAL | MODIFY | Does not cover assignment, comments, membership, edits, or deletion; history `user_id` is non-nullable while status updates assume auth exists |
+| Notifications | Database notification model/service and assignment email | [app/Models/Notification.php](../app/Models/Notification.php), [app/Services/NotificationService.php](../app/Services/NotificationService.php), [database/migrations/2025_08_08_051806_create_notifications_table.php](../database/migrations/2025_08_08_051806_create_notifications_table.php) | Project assignment and comment events create in-app notifications; assignment mail is sent | PARTIAL | MODIFY | Reuse infrastructure; map events to PRISM task/project events and fix `title`/`name` mismatch |
+| Dashboard / monitoring | Filament dashboard widgets | [app/Filament/Widgets/StatsOverview.php](../app/Filament/Widgets/StatsOverview.php), [app/Filament/Widgets/RecentActivityTable.php](../app/Filament/Widgets/RecentActivityTable.php), [app/Filament/Widgets/UserStatisticsChart.php](../app/Filament/Widgets/UserStatisticsChart.php) | Shows project/ticket counts, assigned/overdue work, activity, contributions, and trends; membership filters apply for normal users | PARTIAL | MODIFY | Super-admin aggregate behavior needs mapping to Organization Admin; no complete PRISM project/status/deadline dashboard contract or no-data/access-denied test set |
+| Timeline | Project and ticket timeline pages/widgets | [app/Filament/Pages/ProjectTimeline.php](../app/Filament/Pages/ProjectTimeline.php), [app/Filament/Pages/TicketTimeline.php](../app/Filament/Pages/TicketTimeline.php), [app/Filament/Widgets/ProjectTimeline.php](../app/Filament/Widgets/ProjectTimeline.php) | Project dates are visualized and overdue/near-deadline states are shown | PARTIAL | MODIFY | Project timeline progress is elapsed-calendar-time based, not task/status progress; do not adopt it as the PRISM progress rule without decision |
+| Kanban / board | Livewire/Filament `ProjectBoard` | [app/Filament/Pages/ProjectBoard.php](../app/Filament/Pages/ProjectBoard.php), [resources/views/filament/pages/project-board.blade.php](../resources/views/filament/pages/project-board.blade.php) | Project-scoped columns, drag/drop status changes, filtering, quick creation, and CSV/Excel action exist | PARTIAL | MODIFY | Membership checks are tested, but movement/edit helper methods still query removed `tickets.user_id` and do not consistently call `TicketPolicy` |
+| Reporting | Dashboard filters and Maatwebsite Excel export | [app/Exports/TicketsExport.php](../app/Exports/TicketsExport.php), [app/Filament/Actions/ExportTicketsAction.php](../app/Filament/Actions/ExportTicketsAction.php), [app/Filament/Widgets/RecentActivityTable.php](../app/Filament/Widgets/RecentActivityTable.php) | Ticket export and activity date/user filters exist | PARTIAL | MODIFY | PRISM requires authorized project/task/status/deadline reporting; PDF/Excel is not mandatory and export should not drive scope |
+| Database migrations | Laravel migrations for core legacy domain | [database/migrations](../database/migrations) | Users, jobs/cache, projects, project members, tickets, statuses, priorities, comments, histories, notifications, settings, permissions, epics, external access, and indexes are covered | PARTIAL | MODIFY | No organization, division, attachment, integration configuration, or Calendar/Drive tables; preserve legacy data with additive migrations |
+| Database relationships | Eloquent relationships across User, Project, Ticket, Status, Comment, History, Epic, Notification | [app/Models](../app/Models) | Core project/ticket relations are explicit and mostly reusable | PARTIAL | MODIFY | Ticket naming is embedded in foreign keys and relation class names; inspect all references before any migration |
+| Routes | Explicit web routes plus Filament-discovered panel routes | [routes/web.php](../routes/web.php), [app/Providers/Filament/AdminPanelProvider.php](../app/Providers/Filament/AdminPanelProvider.php) | `/admin` routes are generated by Filament; explicit routes cover Google OAuth and external client dashboard | EXISTING | REUSE | New integrations need protected, deployment-scoped routes/actions; external portal is outside current PRISM core scope |
+| Filament Resources | Auto-discovered resources for users, projects, tickets, priorities, comments, roles, notifications | [app/Filament/Resources](../app/Filament/Resources) | Forms, tables, CRUD pages, relation managers, filters, and actions are generated through Filament resources | PARTIAL | REUSE | Add Organization/Division/Task/Attachment resources only after domain decisions; keep existing resource conventions |
+| Filament Pages | Dashboard, login, settings, board, timelines, contributions, epics, leaderboard, and external-related pages | [app/Filament/Pages](../app/Filament/Pages) | Custom pages provide workflows not represented by CRUD resources | PARTIAL | REUSE | Board, timeline, and custom integration UI can be extended; leaderboard and epics require scope decisions |
+| Filament Widgets | Stats, recent activity, project/ticket/user charts and timeline | [app/Filament/Widgets](../app/Filament/Widgets) | Widgets are auto-discovered and Shield-protected where configured | PARTIAL | REUSE | Rework labels/query logic from Ticket to approved Task terminology and required role scopes |
+| Filament-generated UI | Panel, resources, pages, widgets, actions, forms, tables, notifications, auth/profile | [app/Providers/Filament/AdminPanelProvider.php](../app/Providers/Filament/AdminPanelProvider.php) | Filament supplies routing, CRUD UI, auth flow, schema/table components, middleware, and panel navigation; Eloquent supplies the data model | EXISTING | REUSE | This is the main PRISM UI architecture; custom board/integration views may require custom Pages/Livewire components |
+| Filament and policies | Shield plugin plus Laravel policy checks | [app/Providers/Filament/AdminPanelProvider.php](../app/Providers/Filament/AdminPanelProvider.php), [app/Policies](../app/Policies), [config/filament-shield.php](../config/filament-shield.php) | Permissions control resource/page/widget visibility and policies protect records | PARTIAL | MODIFY | Verify every custom action server-side; UI hiding alone is insufficient |
+| Tests | Pest feature tests for panel access, ownership policy, and board membership | [tests/Feature](../tests/Feature), [tests/Unit/ExampleTest.php](../tests/Unit/ExampleTest.php) | Tests cover selected access boundaries and basic examples | PARTIAL | ADD | Missing tests for required roles, divisions, task migration, attachments, reports, integrations, queues, invalid references, and all PRISM auth failure cases |
+| Google OAuth login | Socialite Google controller and user `google_id` | [app/Http/Controllers/Auth/GoogleController.php](../app/Http/Controllers/Auth/GoogleController.php), [config/services.php](../config/services.php), [database/migrations/2025_08_25_174118_add_google_id_to_users_table.php](../database/migrations/2025_08_25_174118_add_google_id_to_users_table.php) | Login links existing email or creates a verified user; new Google users receive no role and therefore cannot pass panel role gating | PARTIAL | MODIFY | Keep separate from Calendar/Drive; define role provisioning and account-linking policy |
+| Google Calendar | No API client, service, OAuth scope, config, model, or UI | [config/services.php](../config/services.php), [app](../app) | No schedule/deadline sync or failure handling exists | MISSING | ADD | Deployment-specific credentials, enable/disable, authorization, selected events, and non-destructive failure handling required |
+| Google Drive | No API client, service, OAuth scope, config, model, or UI | [config/services.php](../config/services.php), [app](../app) | No authorized file references or link workflow exists | MISSING | ADD | Must not replace core attachments or delete core data when Google fails |
+| Email / queue | Database queue and queued assignment mailable | [app/Mail/ProjectAssignmentNotification.php](../app/Mail/ProjectAssignmentNotification.php), [app/Services/NotificationService.php](../app/Services/NotificationService.php), [config/queue.php](../config/queue.php), [database/migrations/0001_01_01_000002_create_jobs_table.php](../database/migrations/0001_01_01_000002_create_jobs_table.php) | Assignment mail implements `ShouldQueue`; local `.env` uses log mailer; Compose does not start a queue worker | PARTIAL | MODIFY | Reuse queue/email; deployment must run worker and configure real mail transport |
+| Environment configuration | Standard `.env` Laravel/database/mail/Google settings | [.env](../.env), [.env.example](../.env.example), [config/services.php](../config/services.php) | Local debug mode, local URL, log mailer, database settings, and Google placeholders are present | PARTIAL | MODIFY | Do not commit secrets; deployment checklist must set app key, debug false, storage link, mail, queue, Google credentials, and database values |
+| Deployment | PHP-FPM Docker image, Nginx, MySQL, phpMyAdmin | [Dockerfile](../Dockerfile), [docker-compose.yml](../docker-compose.yml), [nginx/conf.d](../nginx/conf.d) | PHP 8.3 container installs required extensions; database volume persists; no worker/scheduler service is defined | PARTIAL | MODIFY | Add operational deployment documentation and worker/scheduler strategy; phpMyAdmin should be treated as development-only |
+| Epics | `Epic` model/resource/relation manager | [app/Models/Epic.php](../app/Models/Epic.php), [app/Filament/Pages/EpicsOverview.php](../app/Filament/Pages/EpicsOverview.php) | Groups tickets into larger initiatives | UNKNOWN | INVESTIGATE | Not a PRISM core module; retain until dependency and stakeholder decision are recorded |
+| Leaderboard | Custom Filament page | [app/Filament/Pages/Leaderboard.php](../app/Filament/Pages/Leaderboard.php) | Shows performance-style rankings | CONFLICT | REMOVE | Not in PRISM requirements; remove only after dependency and data-impact review |
+| External client portal | External access model and Livewire dashboard | [app/Models/ExternalAccess.php](../app/Models/ExternalAccess.php), [app/Livewire/ExternalDashboard.php](../app/Livewire/ExternalDashboard.php), [routes/web.php](../routes/web.php) | Token-based external project dashboard exists outside the Filament panel | CONFLICT | INVESTIGATE | PRISM excludes public collaboration; confirm whether this legacy surface is retained, restricted, or removed |
+| CSV/Excel export | Maatwebsite Excel export/actions | [app/Exports/TicketsExport.php](../app/Exports/TicketsExport.php), [app/Filament/Actions/ExportTicketsAction.php](../app/Filament/Actions/ExportTicketsAction.php) | Super-admin board can export selected ticket columns | UNKNOWN | INVESTIGATE | Export formats are not mandatory; preserve only if approved and authorization is tested |
 
-### Ticket
+## Ticket to Task migration audit
 
-DewaKoding calls the main work item a `Ticket`. PRISM calls it a `Task`.
+The current implementation must not be globally renamed. The dependency surface is:
 
-Do not perform a global string replacement.
+- Model and relationships: [app/Models/Ticket.php](../app/Models/Ticket.php), [app/Models/User.php](../app/Models/User.php), [app/Models/Project.php](../app/Models/Project.php), [app/Models/TicketStatus.php](../app/Models/TicketStatus.php), [app/Models/TicketComment.php](../app/Models/TicketComment.php), [app/Models/TicketHistory.php](../app/Models/TicketHistory.php), [app/Models/TicketPriority.php](../app/Models/TicketPriority.php).
+- Schema: `tickets`, `ticket_users`, `ticket_statuses`, `ticket_comments`, `ticket_histories`, `ticket_priorities`, and permission/resource names in [database/migrations](../database/migrations) and [database/seeders/RoleSeeder.php](../database/seeders/RoleSeeder.php).
+- UI and navigation: [app/Filament/Resources/Tickets/TicketResource.php](../app/Filament/Resources/Tickets/TicketResource.php), ticket relation managers, [app/Filament/Pages/ProjectBoard.php](../app/Filament/Pages/ProjectBoard.php), [app/Filament/Pages/TicketTimeline.php](../app/Filament/Pages/TicketTimeline.php), ticket comments, actions, and generated Filament routes.
+- Behavior: status history boot hook, comment notifications, project progress, dashboard queries, exports, and tests.
 
-Inspect:
+Recommended baseline action: **INVESTIGATE**, then choose one documented compatibility strategy: retain the `Ticket` model/table while presenting Task terminology; introduce a compatibility layer; or perform a staged additive migration. Data preservation, foreign keys, route compatibility, permissions, notifications, and tests must be specified before implementation.
 
-- model
-- migration
-- relationships
-- Filament Resource
-- policies
-- routes
-- notifications
-- comments
-- tests
-- database foreign keys
+## Filament architecture summary
 
-Then choose one of:
+Filament is the primary authenticated administration UI. `AdminPanelProvider` configures the `/admin` panel, login, email verification, password reset, profile, session/CSRF middleware, Vite theme, Shield plugin, and auto-discovery of Resources, Pages, and Widgets. Filament Resources bind Eloquent models to forms, tables, CRUD pages, actions, and relation managers. Custom Pages implement the board, timelines, settings, contributions, epics, leaderboard, and login workflows. Widgets render dashboard statistics, charts, activity, and timeline information.
 
-1. true rename/migration
-2. internal Ticket model retained but PRISM UI says Task
-3. compatibility layer during transition
+Filament can be reused for Organization, Division, Member, Project, Task, Attachment, reporting, and integration administration. Existing CRUD requirements fit Resources; board/timeline and Google workflows may need custom Pages or Livewire components. Every custom action must enforce Laravel policies/permissions server-side, not merely hide a button.
 
-### Epic
+## Authentication summary
 
-PRISM does not list Epic Management as a core requirement.
+The application uses Laravel's normal web/session guard through Filament. `User` implements `FilamentUser` and `MustVerifyEmail`, uses Spatie `HasRoles`, and has a hashed password cast. Panel access requires verified email plus at least one role. Google OAuth uses Socialite and logs users into the same session system. This works with PRISM's user-email identity requirement and does not conflict with the one-deployment model.
 
-Do not delete immediately. First check whether the project can reuse Epic functionality as an internal grouping concept. If it is not needed, mark it for later removal.
+JWT is absent. The project-plan JWT statement conflicts with the observed web architecture only if it is interpreted as a replacement for Filament sessions. Record the final API-versus-web decision in [DECISIONS.md](DECISIONS.md) before adding any token architecture. Google-created users currently receive no role, so the account can authenticate but fail panel access.
 
-### Leaderboard
+## Database and schema summary
 
-Not in the PRISM scope.
+The schema is deployment-local and has no organization discriminator. Existing migrations cover users, jobs/cache, projects, project members, tickets, statuses, permissions, comments, histories, priorities, settings, notifications, epics, external access, and indexes. Core relationships are Eloquent-based and generally reusable. Missing schema concepts are organization profile, divisions, persisted attachments, integration configuration, and Google Calendar/Drive references.
 
-Treat as optional/legacy until a project decision is made.
+Use additive migrations and preserve existing ticket data. Do not rename `tickets` or its foreign keys until the Ticket-to-Task strategy is approved.
 
-### Client Portal
+## Compatibility issues / technical debt
 
-Not in the PRISM scope.
+These findings were recorded, not fixed, because this task is an audit only.
 
-Treat as optional/legacy until a project decision is made.
+| File | Issue | Likely cause | Impact | Recommended future action |
+|---|---|---|---|---|
+| [config/database.php](../config/database.php) | `PDO::MYSQL_ATTR_SSL_CA` is used in both MySQL and MariaDB connection options | Framework skeleton/config was carried into a PHP runtime where the constant may be removed or renamed | Application bootstrap/database configuration can fail on affected PHP versions | Verify the supported PHP/Laravel compatibility matrix and replace with the supported PDO constant/configuration in a separate compatibility change |
+| [app/Services/NotificationService.php](../app/Services/NotificationService.php) | Comment notification interpolates `$ticket->title` | Legacy field name was not updated when ticket field is `name` | Comment notification creation/message generation can fail or produce an invalid message | Add a focused notification regression test, then correct the field in a normal bug-fix task |
+| [app/Filament/Pages/ProjectBoard.php](../app/Filament/Pages/ProjectBoard.php) | Custom board authorization reads `$ticket->user_id` | Ownership field was migrated to `created_by`, but helper methods were not updated | Edit/move access can be inconsistent or fail; policy behavior is bypassed | Consolidate board actions through `TicketPolicy` and test direct Livewire mutation |
+| [app/Models/Ticket.php](../app/Models/Ticket.php), [database/migrations/2025_03_28_144500_create_ticket_histories_table.php](../database/migrations/2025_03_28_144500_create_ticket_histories_table.php) | Status history writes `auth()->id()` to non-nullable `user_id` | Model event assumes an authenticated status change | Non-authenticated/system updates may fail | Define system actor behavior and cover authenticated/system status changes |
+| [app/Filament/Resources/*](../app/Filament/Resources) | Rich-editor uploads use public visibility without persisted metadata | Editor attachments were implemented as content uploads rather than domain attachments | Direct file access and inability to authorize, list, or delete attachments safely | Design an Attachment record, private storage policy, and cleanup strategy |
+| [app/Models/Setting.php](../app/Models/Setting.php), [database/migrations/2025_11_08_063526_add_user_id_to_settings_table.php](../database/migrations/2025_11_08_063526_add_user_id_to_settings_table.php) | Global and per-user settings share a table while helper behavior uses nullable `user_id` | User settings were added after global settings | Ambiguous uniqueness and lookup behavior needs regression coverage | Add focused tests and document global versus user-specific setting semantics |
 
-### CSV export
+## Recommended next development task
 
-Not explicitly required in the PRISM SRS.
+**P0-02: Resolve the baseline architecture decisions before implementation.** Record the JWT web/API decision, the Ticket-to-Task compatibility strategy, the required role capability matrix, the organization/division data model under one deployment, and the attachment security model. Then run a narrow baseline validation: migrations, panel login/role flow, project membership authorization, ticket policy/board mutation behavior, queue worker behavior, and existing Pest tests.
 
-Do not advertise it as a core requirement unless approved.
-
-### Google OAuth login
-
-DewaKoding supports Google OAuth login. PRISM's Google Calendar/Drive integration is a separate requirement.
-
-Do not confuse:
-
-- Google OAuth login
-- Google Calendar integration
-- Google Drive integration
-
-They are different capabilities.
-
-### Queue/email notifications
-
-This is valuable reusable infrastructure for PRISM Notification Management.
-
-Reuse it where possible.
-
-## License
-
-The repository README states that DewaKoding Project Management is licensed under the MIT License.
-
-Preserve required license/copyright notices when modifying and redistributing the codebase.
+Do not begin Organization, Task, or integration implementation until these decisions and the migration impact are documented.
