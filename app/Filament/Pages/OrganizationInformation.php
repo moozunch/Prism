@@ -6,10 +6,10 @@ use App\Models\Organization;
 use BackedEnum;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form; // Mengganti Filament\Schemas\Schema
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use UnitEnum;
@@ -23,8 +23,7 @@ class OrganizationInformation extends Page implements HasForms
     protected static ?string $navigationLabel = 'Organization Information';
     protected static ?string $title = 'Organization Information';
     protected static ?int $navigationSort = 1;
-    
-    // Properti ini sudah benar tidak menggunakan static
+
     protected string $view = 'filament.pages.organization-information';
 
     public ?array $data = [];
@@ -36,7 +35,6 @@ class OrganizationInformation extends Page implements HasForms
 
     public function mount(): void
     {
-        // Pengamanan jika tabel belum memiliki data
         $organization = Organization::profile();
 
         if ($organization) {
@@ -52,7 +50,7 @@ class OrganizationInformation extends Page implements HasForms
         }
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -62,15 +60,19 @@ class OrganizationInformation extends Page implements HasForms
                             ->label('Organization Name')
                             ->required()
                             ->maxLength(255),
+
                         TextInput::make('email')
                             ->email()
                             ->maxLength(255),
+
                         TextInput::make('phone')
                             ->tel()
                             ->maxLength(255),
+
                         Textarea::make('address')
                             ->rows(3)
                             ->columnSpanFull(),
+
                         Textarea::make('description')
                             ->rows(5)
                             ->columnSpanFull(),
@@ -83,7 +85,7 @@ class OrganizationInformation extends Page implements HasForms
     public function save(): void
     {
         $organization = Organization::profile();
-        
+
         if (!$organization) {
             Organization::create($this->form->getState());
         } else {
