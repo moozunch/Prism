@@ -27,32 +27,6 @@ class ViewProject extends ViewRecord
                 ->icon('heroicon-o-view-columns')
                 ->color('info')
                 ->url(fn () => ProjectBoard::getUrl(['project_id' => $this->record->id])),
-            Action::make('external_access')
-                ->label('External Dashboard')
-                ->icon('heroicon-o-globe-alt')
-                ->color('success')
-                ->visible(fn () => auth()->user()->hasRole('super_admin'))
-                ->modalHeading('External Dashboard Access')
-                ->modalDescription('Share these credentials with external users to access the project dashboard.')
-                ->modalContent(function () {
-                    $record = $this->record;
-                    $externalAccess = $record->externalAccess;
-                
-                    if (!$externalAccess) {
-                        $externalAccess = $record->generateExternalAccess();
-                    }
-                
-                    $dashboardUrl = url('/external/' . $externalAccess->access_token);
-                
-                    return view('filament.components.external-access-modal', [
-                        'dashboardUrl' => $dashboardUrl,
-                        'password' => $externalAccess->password,
-                        'lastAccessed' => $externalAccess->last_accessed_at ? $externalAccess->last_accessed_at->format('d/m/Y H:i') : null,
-                        'isActive' => $externalAccess->is_active,
-                    ]);
-                })
-                ->modalSubmitAction(false)
-                ->modalCancelActionLabel('Close'),
         ];
     }
 
@@ -124,15 +98,10 @@ class ViewProject extends ViewRecord
                                     ->badge()
                                     ->color('info'),
                                 TextEntry::make('tickets_count')
-                                    ->label('Total Tickets')
+                                    ->label('Total Tasks')
                                     ->getStateUsing(fn ($record) => $record->tickets()->count())
                                     ->badge()
                                     ->color('primary'),
-                                TextEntry::make('epics_count')
-                                    ->label('Total Epics')
-                                    ->getStateUsing(fn ($record) => $record->epics()->count())
-                                    ->badge()
-                                    ->color('warning'),
                                 TextEntry::make('statuses_count')
                                     ->label('Ticket Statuses')
                                     ->getStateUsing(fn ($record) => $record->ticketStatuses()->count())

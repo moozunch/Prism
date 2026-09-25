@@ -193,7 +193,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
                 <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <h2 class="text-lg font-medium text-gray-900 dark:text-white">Ticket Timeline</h2>
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-white">Task Timeline</h2>
                         <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -216,8 +216,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
                             </svg>
-                            <h3 class="text-lg font-medium">No tickets with due dates</h3>
-                            <p class="text-sm">Add due dates to tickets to see the timeline</p>
+                            <h3 class="text-lg font-medium">No tasks with due dates</h3>
+                            <p class="text-sm">Add due dates to tasks to see the timeline</p>
                         </div>
                     @endif
                 </div>

@@ -71,7 +71,7 @@ class EditTicket extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title('Ticket updated')
-            ->body('The ticket has been updated successfully.');
+            ->title('Task updated')
+            ->body('The task has been updated successfully.');
     }
 }

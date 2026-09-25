@@ -47,6 +47,12 @@ class UserResource extends Resource
                         ignoreRecord: true
                     )
                     ->maxLength(255),
+                Select::make('division_id')
+                    ->label('Division')
+                    ->relationship('division', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->nullable(),
                 DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
                     ->password()
@@ -75,6 +81,12 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('division.name')
+                    ->label('Division')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('Unassigned'),
+
                 TextColumn::make('roles.name')
                     ->label('Roles')
                     ->badge()
@@ -89,17 +101,17 @@ class UserResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('assigned_tickets_count')
-                    ->label('Assigned Tickets')
+                    ->label('Assigned Tasks')
                     ->counts('assignedTickets')
-                    ->tooltip('Number of tickets assigned to this user')
+                    ->tooltip('Number of tasks assigned to this user')
                     ->sortable(),
 
                 TextColumn::make('created_tickets_count')
-                    ->label('Created Tickets')
+                    ->label('Created Tasks')
                     ->getStateUsing(function (User $record): int {
                         return $record->createdTickets()->count();
                     })
-                    ->tooltip('Number of tickets created by this user')
+                    ->tooltip('Number of tasks created by this user')
                     ->sortable(),
 
                 TextColumn::make('email_verified_at')
@@ -123,7 +135,7 @@ class UserResource extends Resource
                     ->query(fn (Builder $query): Builder => $query->whereHas('projects')),
 
                 Filter::make('has_assigned_tickets')
-                    ->label('Has Assigned Tickets')
+                    ->label('Has Assigned Tasks')
                     ->query(fn (Builder $query): Builder => $query->whereHas('assignedTickets')),
 
                 Filter::make('has_created_tickets')

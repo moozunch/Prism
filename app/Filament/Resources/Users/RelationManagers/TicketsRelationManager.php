@@ -37,12 +37,12 @@ class TicketsRelationManager extends RelationManager
         return $table
             ->columns([
                 TextColumn::make('uuid')
-                    ->label('Ticket ID')
+                    ->label('Task ID')
                     ->searchable()
                     ->copyable(),
 
                 TextColumn::make('name')
-                    ->label('Ticket Name')
+                    ->label('Task Name')
                     ->searchable()
                     ->sortable()
                     ->limit(30),
@@ -107,7 +107,7 @@ class TicketsRelationManager extends RelationManager
             ])
             ->recordActions([
                 ViewAction::make()
-                    ->url(fn ($record) => route('filament.admin.resources.tickets.edit', $record)),
+                    ->url(fn ($record) => route('filament.admin.resources.tasks.edit', $record)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

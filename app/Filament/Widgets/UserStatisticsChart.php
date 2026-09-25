@@ -50,7 +50,7 @@ class UserStatisticsChart extends ChartWidget
                     'borderWidth' => 1,
                 ],
                 [
-                    'label' => 'Total Assigned Tickets',
+                    'label' => 'Total Assigned Tasks',
                     'data' => $ticketsData,
                     'backgroundColor' => '#10B981',
                     'borderColor' => '#10B981',

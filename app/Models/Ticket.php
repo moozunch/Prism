@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 
 class Ticket extends Model
@@ -22,7 +23,6 @@ class Ticket extends Model
         'start_date',
         'due_date',
         'uuid',
-        'epic_id',
         'created_by',
     ];
 
@@ -89,9 +89,9 @@ class Ticket extends Model
         return $this->hasMany(TicketComment::class)->orderBy('created_at', 'asc');
     }
 
-    public function epic(): BelongsTo
+    public function attachments(): MorphMany
     {
-        return $this->belongsTo(Epic::class);
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 
     public function priority(): BelongsTo

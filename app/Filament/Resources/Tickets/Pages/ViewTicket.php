@@ -164,18 +164,18 @@ class ViewTicket extends ViewRecord
     {
         return $schema
             ->schema([
-                Section::make('Ticket Information')
+                Section::make('Task Information')
                     ->icon('heroicon-o-ticket')
                     ->schema([
                         Grid::make(['default' => 1, 'md' => 2, 'lg' => 3])
                             ->schema([
                                 TextEntry::make('uuid')
-                                    ->label('Ticket ID')
+                                    ->label('Task ID')
                                     ->copyable()
                                     ->icon('heroicon-o-hashtag'),
 
                                 TextEntry::make('name')
-                                    ->label('Ticket Name')
+                                    ->label('Task Name')
                                     ->icon('heroicon-o-document-text')
                                     ->weight('bold'),
 
@@ -240,7 +240,7 @@ class ViewTicket extends ViewRecord
 
                 Section::make('Comments')
                     ->icon('heroicon-o-chat-bubble-left-right')
-                    ->description('Discussion about this ticket')
+                    ->description('Discussion about this task')
                     ->schema([
                         TextEntry::make('comments_list')
                             ->hiddenLabel()
@@ -274,12 +274,6 @@ class ViewTicket extends ViewRecord
                                     ->dateTime('d M Y H:i')
                                     ->icon('heroicon-o-arrow-path'),
 
-                                TextEntry::make('epic.name')
-                                    ->label('Epic')
-                                    ->default('No Epic')
-                                    ->badge()
-                                    ->color('warning')
-                                    ->icon('heroicon-o-flag'),
                             ]),
 
                         Section::make('Status History')

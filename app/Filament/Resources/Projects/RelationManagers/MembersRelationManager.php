@@ -11,6 +11,7 @@ use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -46,12 +47,27 @@ class MembersRelationManager extends RelationManager
                 TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('pivot.role')
+                    ->label('Project Responsibility')
+                    ->badge()
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
                 AttachAction::make()
+                    ->schema(fn (AttachAction $action): array => [
+                        $action->getRecordSelect(),
+                        Select::make('role')
+                            ->label('Project Responsibility')
+                            ->options([
+                                'Project Manager' => 'Project Manager',
+                                'Member' => 'Member',
+                            ])
+                            ->default('Member')
+                            ->required(),
+                    ])
                     ->preloadRecordSelect()
                     ->recordSelectSearchColumns(['name', 'email'])
                     ->recordSelect(fn (Select $select) => $select
@@ -80,6 +96,16 @@ class MembersRelationManager extends RelationManager
                     }),
             ])
             ->recordActions([
+                EditAction::make()
+                    ->schema([
+                        Select::make('role')
+                            ->label('Project Responsibility')
+                            ->options([
+                                'Project Manager' => 'Project Manager',
+                                'Member' => 'Member',
+                            ])
+                            ->required(),
+                    ]),
                 DetachAction::make()
                     ->label('Remove')
                     ->after(function (Model $record) {

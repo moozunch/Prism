@@ -6,6 +6,7 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ColorPicker;
 use App\Filament\Resources\Projects\Pages\CreateProject;
@@ -19,9 +20,9 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use App\Filament\Resources\Projects\RelationManagers\TicketStatusesRelationManager;
 use App\Filament\Resources\Projects\RelationManagers\MembersRelationManager;
-use App\Filament\Resources\Projects\RelationManagers\EpicsRelationManager;
 use App\Filament\Resources\Projects\RelationManagers\TicketsRelationManager;
 use App\Filament\Resources\Projects\RelationManagers\NotesRelationManager;
+use App\Filament\Resources\Projects\RelationManagers\AttachmentsRelationManager;
 use App\Filament\Resources\Projects\Pages\ListProjects;
 use App\Filament\Resources\Projects\Pages\ViewProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
@@ -63,6 +64,15 @@ class ProjectResource extends Resource
                 TextInput::make('ticket_prefix')
                     ->required()
                     ->maxLength(255),
+                Select::make('status')
+                    ->options([
+                        'Draft' => 'Draft',
+                        'In Progress' => 'In Progress',
+                        'Completed' => 'Completed',
+                        'On Hold' => 'On Hold',
+                    ])
+                    ->default('Draft')
+                    ->required(),
                 ColorPicker::make('color')
                     ->label('Project Color')
                     ->helperText('Choose a color for the project card and badge')
@@ -77,7 +87,7 @@ class ProjectResource extends Resource
                     ->displayFormat('d/m/Y')
                     ->afterOrEqual('start_date'),
                 Toggle::make('create_default_statuses')
-                    ->label('Use Default Ticket Statuses')
+                    ->label('Use Default Task Statuses')
                     ->helperText('Create standard Backlog, To Do, In Progress, Review, and Done statuses automatically')
                     ->default(true)
                     ->dehydrated(false)
@@ -119,6 +129,15 @@ class ProjectResource extends Resource
                     ->searchable(),
                 TextColumn::make('ticket_prefix')
                     ->searchable(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Completed' => 'success',
+                        'In Progress' => 'info',
+                        'On Hold' => 'warning',
+                        default => 'gray',
+                    })
+                    ->sortable(),
                 TextColumn::make('progress_percentage')
                     ->label('Progress')
                     ->getStateUsing(function (Project $record): string {
@@ -134,9 +153,11 @@ class ProjectResource extends Resource
                     )
                     ->sortable(),
                 TextColumn::make('start_date')
+                    ->label('Start Date')
                     ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('end_date')
+                    ->label('Deadline')
                     ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('remaining_days')
@@ -171,7 +192,7 @@ class ProjectResource extends Resource
                     ->label('Members'),
                 TextColumn::make('tickets_count')
                     ->counts('tickets')
-                    ->label('Tickets'),
+                    ->label('Tasks'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -197,9 +218,9 @@ class ProjectResource extends Resource
         return [
             TicketStatusesRelationManager::class,
             MembersRelationManager::class,
-            EpicsRelationManager::class,
             TicketsRelationManager::class,
             NotesRelationManager::class,
+            AttachmentsRelationManager::class,
         ];
     }
 

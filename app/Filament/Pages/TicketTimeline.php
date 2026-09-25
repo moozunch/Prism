@@ -19,8 +19,8 @@ class TicketTimeline extends Page implements HasForms
     use InteractsWithForms;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationLabel = 'Ticket Timeline';
-    protected static ?string $title = 'Ticket Timeline';
+    protected static ?string $navigationLabel = 'Task Timeline';
+    protected static ?string $title = 'Task Timeline';
     protected static ?int $navigationSort = 6;
     protected string $view = 'filament.pages.ticket-timeline';
     protected static string|\UnitEnum|null $navigationGroup = 'Project Management';
@@ -28,7 +28,7 @@ class TicketTimeline extends Page implements HasForms
 
     public function getSubheading(): ?string
     {
-        return 'View project tickets in Gantt chart timeline';
+        return 'View project tasks in Gantt chart timeline';
     }
     public ?string $projectId = null;
     public Collection $projects;
@@ -168,7 +168,7 @@ class TicketTimeline extends Page implements HasForms
 
                     $taskData = [
                         'id' => (string) $ticket->id,
-                        'text' => $this->truncateName($ticket->name ?? 'Untitled Ticket'),
+                        'text' => $this->truncateName($ticket->name ?? 'Untitled Task'),
                         'start_date' => $startDate->format('d-m-Y H:i'),
                         'end_date' => $endDate->format('d-m-Y H:i'),
                         'duration' => max(1, $startDate->diffInDays($endDate)),

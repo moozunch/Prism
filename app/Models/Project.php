@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Carbon\Carbon;
 
 class Project extends Model
@@ -17,6 +17,7 @@ class Project extends Model
         'name',
         'description',
         'ticket_prefix',
+        'status',
         'color',
         'start_date',
         'end_date',
@@ -57,23 +58,25 @@ class Project extends Model
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'project_members')
+            ->withPivot('role')
             ->withTimestamps();
     }
 
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'project_members')
+            ->withPivot('role')
             ->withTimestamps();
-    }
-
-    public function epics(): HasMany
-    {
-        return $this->hasMany(Epic::class);
     }
 
     public function notes(): HasMany
     {
         return $this->hasMany(ProjectNote::class);
+    }
+
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 
     public function getRemainingDaysAttribute()
@@ -109,15 +112,4 @@ class Project extends Model
         return round(($completedTickets / $totalTickets) * 100, 1);
     }
     
-    public function externalAccess(): HasOne
-    {
-        return $this->hasOne(ExternalAccess::class);
-    }
-    
-    public function generateExternalAccess()
-    {
-        $this->externalAccess()?->delete();
-    
-        return ExternalAccess::generateForProject($this->id);
-    }
 }

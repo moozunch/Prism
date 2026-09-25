@@ -30,9 +30,9 @@ class TicketPriorityResource extends Resource
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-flag';
 
-    protected static ?string $navigationLabel = 'Ticket Priorities';
+    protected static ?string $navigationLabel = 'Task Priorities';
 
-    protected static ?string $pluralLabel = 'Ticket Priorities';
+    protected static ?string $pluralLabel = 'Task Priorities';
 
     protected static string | \UnitEnum | null $navigationGroup = 'Settings';
 
@@ -61,7 +61,7 @@ class TicketPriorityResource extends Resource
                     ->sortable(),
                 TextColumn::make('tickets_count')
                     ->counts('tickets')
-                    ->label('Tickets Count')
+                    ->label('Tasks Count')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

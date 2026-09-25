@@ -26,8 +26,8 @@ class NotificationService
             Notification::create([
                 'user_id' => $user->id,
                 'type' => 'comment_added',
-                'title' => 'New Comment on Ticket',
-                'message' => "{$commenter->name} added a comment on ticket {$ticket->title}",
+                'title' => 'New Comment on Task',
+                'message' => "{$commenter->name} added a comment on task {$ticket->name}",
                 'data' => [
                     'ticket_id' => $ticket->id,
                     'comment_id' => $comment->id,
@@ -50,7 +50,7 @@ class NotificationService
                 'user_id' => $user->id,
                 'type' => 'comment_updated',
                 'title' => 'Comment Updated',
-                'message' => "{$commenter->name} updated a comment on ticket {$ticket->title}",
+                'message' => "{$commenter->name} updated a comment on task {$ticket->name}",
                 'data' => [
                     'ticket_id' => $ticket->id,
                     'comment_id' => $comment->id,

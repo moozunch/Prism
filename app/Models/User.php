@@ -9,6 +9,7 @@ use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -30,6 +31,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'email_verified_at',
         'password',
         'google_id',
+        'division_id',
     ];
 
     /**
@@ -58,7 +60,13 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_members')
+            ->withPivot('role')
             ->withTimestamps();
+    }
+
+    public function division(): BelongsTo
+    {
+        return $this->belongsTo(Division::class);
     }
 
     public function tickets(): HasMany
@@ -99,6 +107,26 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function getUnreadNotificationsCountAttribute(): int
     {
         return $this->unreadNotifications()->count();
+    }
+
+    public function isOrganizationAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function isDivisionHead(): bool
+    {
+        return $this->hasRole('division_head');
+    }
+
+    public function isProjectManager(): bool
+    {
+        return $this->hasRole('project_manager');
+    }
+
+    public function isMember(): bool
+    {
+        return $this->hasRole('member');
     }
 
     public function canAccessPanel(Panel $panel): bool

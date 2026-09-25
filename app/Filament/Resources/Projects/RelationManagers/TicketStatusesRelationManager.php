@@ -25,6 +25,7 @@ use Filament\Notifications\Notification;
 class TicketStatusesRelationManager extends RelationManager
 {
     protected static string $relationship = 'ticketStatuses';
+    protected static ?string $title = 'Task Statuses';
 
     public static function getBadge(Model $ownerRecord, string $pageClass): ?string
     {

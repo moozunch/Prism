@@ -60,7 +60,7 @@ class NotificationResource extends Resource
                     ->weight(fn (Notification $record) => $record->isUnread() ? 'bold' : 'normal'),
 
                 TextColumn::make('ticket.name')
-                    ->label('Ticket')
+                    ->label('Task')
                     ->badge()
                     ->color('primary')
                     ->searchable()
@@ -94,12 +94,12 @@ class NotificationResource extends Resource
                     }),
                     
                 Action::make('viewTicket')
-                    ->label('View Ticket')
+                    ->label('View Task')
                     ->icon('heroicon-o-eye')
                     ->color('primary')
                     ->visible(fn (Notification $record) => isset($record->data['ticket_id']))
                     ->url(fn (Notification $record) => 
-                        route('filament.admin.resources.tickets.view', ['record' => $record->data['ticket_id']])
+                        route('filament.admin.resources.tasks.view', ['record' => $record->data['ticket_id']])
                     )
                     ->openUrlInNewTab(),
             ])

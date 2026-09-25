@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Tickets;
 
-use App\Models\Epic;
 use App\Models\Ticket;
 use App\Models\Project;
 use Filament\Tables\Table;
@@ -29,6 +28,9 @@ use App\Filament\Resources\Tickets\Pages\EditTicket;
 use App\Filament\Resources\Tickets\Pages\ViewTicket;
 use App\Filament\Resources\Tickets\Pages\ListTickets;
 use App\Filament\Resources\Tickets\Pages\CreateTicket;
+use App\Filament\Resources\Tickets\RelationManagers\AttachmentsRelationManager;
+use App\Services\GoogleCalendarService;
+use App\Services\GoogleDriveService;
 
 class TicketResource extends Resource
 {
@@ -36,7 +38,10 @@ class TicketResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-ticket';
 
-    protected static ?string $navigationLabel = 'Tickets';
+    protected static ?string $navigationLabel = 'Tasks';
+    protected static ?string $modelLabel = 'Task';
+    protected static ?string $pluralModelLabel = 'Tasks';
+    protected static ?string $slug = 'tasks';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Project Management';
 
@@ -87,7 +92,6 @@ class TicketResource extends Resource
                     ->afterStateUpdated(function (callable $set) {
                         $set('ticket_status_id', null);
                         $set('assignees', []);
-                        $set('epic_id', null);
                     }),
 
                 Select::make('ticket_status_id')
@@ -114,26 +118,8 @@ class TicketResource extends Resource
                     ->preload()
                     ->nullable(),
 
-                Select::make('epic_id')
-                    ->label('Epic')
-                    ->options(function (Get $get) {
-                        $projectId = $get('project_id');
-
-                        if (!$projectId) {
-                            return [];
-                        }
-
-                        return Epic::where('project_id', $projectId)
-                            ->pluck('name', 'id')
-                            ->toArray();
-                    })
-                    ->searchable()
-                    ->preload()
-                    ->nullable()
-                    ->hidden(fn(Get $get): bool => !$get('project_id')),
-
                 TextInput::make('name')
-                    ->label('Ticket Name')
+                    ->label('Task Name')
                     ->required()
                     ->maxLength(255),
 
@@ -170,7 +156,7 @@ class TicketResource extends Resource
                     )
                     ->searchable()
                     ->preload()
-                    ->helperText('Select multiple users to assign this ticket to. Only project members can be assigned.')
+                    ->helperText('Select multiple users to assign this task to. Only project members can be assigned.')
                     ->hidden(fn(Get $get): bool => !$get('project_id'))
                     ->live(),
 
@@ -195,7 +181,7 @@ class TicketResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('uuid')
-                    ->label('Ticket ID')
+                    ->label('Task ID')
                     ->searchable()
                     ->copyable(),
 
@@ -261,13 +247,6 @@ class TicketResource extends Resource
                     ->date()
                     ->sortable(),
 
-                TextColumn::make('epic.name')
-                    ->label('Epic')
-                    ->sortable()
-                    ->searchable()
-                    ->default('—')
-                    ->placeholder('No Epic'),
-
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -296,22 +275,6 @@ class TicketResource extends Resource
                         }
 
                         return TicketStatus::where('project_id', $projectId)
-                            ->pluck('name', 'id')
-                            ->toArray();
-                    })
-                    ->searchable()
-                    ->preload(),
-
-                SelectFilter::make('epic_id')
-                    ->label('Epic')
-                    ->options(function () {
-                        $projectId = request()->input('tableFilters.project_id');
-
-                        if (!$projectId) {
-                            return [];
-                        }
-
-                        return Epic::where('project_id', $projectId)
                             ->pluck('name', 'id')
                             ->toArray();
                     })
@@ -372,6 +335,56 @@ class TicketResource extends Resource
                             ])
                         );
                     }),
+                Action::make('pushToGoogleCalendar')
+                    ->label('Add to Google Calendar')
+                    ->icon('heroicon-o-calendar-days')
+                    ->visible(fn (): bool => (bool) config('services.google.calendar.enabled'))
+                    ->action(function (Ticket $record): void {
+                        $event = app(GoogleCalendarService::class)->createTaskDeadline($record);
+
+                        if ($event) {
+                            Notification::make()
+                                ->title('Task added to Google Calendar')
+                                ->success()
+                                ->send();
+
+                            return;
+                        }
+
+                        Notification::make()
+                            ->title('Google Calendar unavailable')
+                            ->body('The task was not changed. Check Google configuration and authorization.')
+                            ->warning()
+                            ->send();
+                    }),
+                Action::make('linkGoogleDriveFile')
+                    ->label('Link Google Drive File')
+                    ->icon('heroicon-o-paper-clip')
+                    ->visible(fn (): bool => (bool) config('services.google.drive.enabled'))
+                    ->form([
+                        TextInput::make('file_id')
+                            ->label('Google Drive File ID')
+                            ->required(),
+                    ])
+                    ->action(function (Ticket $record, array $data): void {
+                        $file = app(GoogleDriveService::class)->getFileReference($data['file_id']);
+
+                        if ($file) {
+                            Notification::make()
+                                ->title('Google Drive file authorized')
+                                ->body($file['name'] ?? 'File reference retrieved.')
+                                ->success()
+                                ->send();
+
+                            return;
+                        }
+
+                        Notification::make()
+                            ->title('Google Drive unavailable')
+                            ->body('The task was not changed. Check Google configuration and authorization.')
+                            ->warning()
+                            ->send();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -384,7 +397,7 @@ class TicketResource extends Resource
     public static function getRelations(): array
     {
         return [
-
+            AttachmentsRelationManager::class,
         ];
     }
 

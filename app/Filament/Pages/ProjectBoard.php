@@ -2,22 +2,17 @@
 
 namespace App\Filament\Pages;
 
-use App\Exports\TicketsExport;
-use App\Filament\Actions\ExportTicketsAction;
 use App\Filament\Resources\Tickets\TicketResource;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
-use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ProjectBoard extends Page
 {
@@ -35,7 +30,7 @@ class ProjectBoard extends Page
 
     public function getSubheading(): ?string
     {
-        return 'Kanban board for ticket management';
+        return 'Kanban board for task management';
     }
 
     protected static ?string $slug = 'project-board/{project_id?}';
@@ -267,7 +262,7 @@ class ProjectBoard extends Page
             if (! $this->canManageTicket($ticket)) {
                 Notification::make()
                     ->title('Permission Denied')
-                    ->body('You do not have permission to move this ticket.')
+                    ->body('You do not have permission to move this task.')
                     ->danger()
                     ->send();
 
@@ -283,7 +278,7 @@ class ProjectBoard extends Page
             $this->dispatch('ticket-updated');
 
             Notification::make()
-                ->title('Ticket Updated')
+                    ->title('Task Updated')
                 ->success()
                 ->send();
         }
@@ -302,7 +297,7 @@ class ProjectBoard extends Page
 
         if (! $ticket) {
             Notification::make()
-                ->title('Ticket Not Found')
+                ->title('Task Not Found')
                 ->danger()
                 ->send();
 
@@ -325,7 +320,7 @@ class ProjectBoard extends Page
         if (! $this->canEditTicket($ticket)) {
             Notification::make()
                 ->title('Permission Denied')
-                ->body('You do not have permission to edit this ticket.')
+                ->body('You do not have permission to edit this task.')
                 ->danger()
                 ->send();
 
@@ -340,7 +335,7 @@ class ProjectBoard extends Page
         return [
             Action::make('new_ticket')
                 ->name('ticket_on_board')
-                ->label('New Ticket')
+                ->label('New Task')
                 ->icon('heroicon-m-plus')
                 ->visible(fn () => $this->selectedProject !== null && auth()->user()->can('create_ticket'))
                 ->schema(fn ($schema) => TicketResource::form($schema)
@@ -373,8 +368,8 @@ class ProjectBoard extends Page
                     $schema->model($record)->saveRelationships();
 
                     Notification::make()
-                        ->title('Ticket Created')
-                        ->body('The ticket has been created successfully.')
+                        ->title('Task Created')
+                        ->body('The task has been created successfully.')
                         ->success()
                         ->send();
                 }),
@@ -384,9 +379,6 @@ class ProjectBoard extends Page
                 ->icon('heroicon-m-arrow-path')
                 ->action('refreshBoard')
                 ->color('warning'),
-            ExportTicketsAction::make()
-                ->visible(fn () => $this->selectedProject !== null && auth()->user()->hasRole(['super_admin'])),
-
             Action::make('filter_users')
                 ->label('Filter by User')
                 ->icon('heroicon-m-user-group')
@@ -407,13 +399,13 @@ class ProjectBoard extends Page
                     if ($userCount > 0) {
                         Notification::make()
                             ->title('Filter Applied')
-                            ->body("Showing tickets for {$userCount} selected user(s)")
+                            ->body("Showing tasks for {$userCount} selected user(s)")
                             ->success()
                             ->send();
                     } else {
                         Notification::make()
                             ->title('Filter Cleared')
-                            ->body('Showing all tickets')
+                            ->body('Showing all tasks')
                             ->info()
                             ->send();
                     }
@@ -473,83 +465,6 @@ class ProjectBoard extends Page
         return auth()->user()->hasRole(['super_admin'])
             || $ticket->user_id === auth()->id()
             || $ticket->assignees()->where('users.id', auth()->id())->exists();
-    }
-
-    public function exportTickets(array $selectedColumns): void
-    {
-        if (empty($selectedColumns)) {
-            Notification::make()
-                ->title('Export Failed')
-                ->body('Please select at least one column to export.')
-                ->danger()
-                ->send();
-
-            return;
-        }
-
-        $tickets = collect();
-
-        if ($this->selectedProject) {
-            $tickets = $this->selectedProject->tickets()
-                ->with(['assignees', 'status', 'project', 'epic'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-        } elseif ($this->ticketStatuses->isNotEmpty()) {
-            $ticketIds = $this->ticketStatuses->flatMap(function ($status) {
-                return $status->tickets->pluck('id');
-            });
-
-            $tickets = Ticket::whereIn('id', $ticketIds)
-                ->with(['assignees', 'status', 'project', 'epic'])
-                ->orderBy('created_at', 'asc')
-                ->get();
-        }
-
-        if ($tickets->isEmpty()) {
-            Notification::make()
-                ->title('Export Failed')
-                ->body('No tickets found to export.')
-                ->warning()
-                ->send();
-
-            return;
-        }
-
-        try {
-            $fileName = 'tickets_'.($this->selectedProject?->name ?? 'export').'_'.now()->format('Y-m-d_H-i-s').'.xlsx';
-            $fileName = Str::slug($fileName, '_').'.xlsx';
-            $export = new TicketsExport($tickets, $selectedColumns);
-            Excel::store($export, 'exports/'.$fileName, 'public');
-            $downloadUrl = asset('storage/exports/'.$fileName);
-            $this->js("
-                fetch('{$downloadUrl}')
-                    .then(response => response.blob())
-                    .then(blob => {
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.style.display = 'none';
-                        a.href = url;
-                        a.download = '{$fileName}';
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-                    });
-            ");
-
-            Notification::make()
-                ->title('Export Successful')
-                ->body('Your Excel file is being downloaded.')
-                ->success()
-                ->send();
-
-        } catch (Exception $e) {
-            Notification::make()
-                ->title('Export Failed')
-                ->body('An error occurred while exporting: '.$e->getMessage())
-                ->danger()
-                ->send();
-        }
     }
 
     public function canMoveTickets(): bool

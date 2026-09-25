@@ -17,9 +17,9 @@ class EditTicketComment extends EditRecord
     {
         return [
             Action::make('backToTicket')
-                ->label('Back to Ticket')
+                ->label('Back to Task')
                 ->color('success')
-                ->url(fn () => route('filament.admin.resources.tickets.view', ['record' => $this->record->ticket_id]))
+                ->url(fn () => route('filament.admin.resources.tasks.view', ['record' => $this->record->ticket_id]))
                 ->icon('heroicon-o-arrow-left'),
         ];
     }
@@ -33,7 +33,7 @@ class EditTicketComment extends EditRecord
                 ->title('You do not have permission to edit this comment')
                 ->danger()
                 ->send();
-            $this->redirect(route('filament.admin.resources.tickets.view', ['record' => $record->ticket_id]));
+            $this->redirect(route('filament.admin.resources.tasks.view', ['record' => $record->ticket_id]));
 
             return $record;
         }
@@ -45,7 +45,7 @@ class EditTicketComment extends EditRecord
 
     protected function getRedirectUrl(): string
     {
-        return route('filament.admin.resources.tickets.view', ['record' => $this->record->ticket_id]);
+        return route('filament.admin.resources.tasks.view', ['record' => $this->record->ticket_id]);
     }
 
     protected function getSavedNotificationTitle(): ?string
@@ -71,7 +71,7 @@ class EditTicketComment extends EditRecord
                 ->danger()
                 ->send();
 
-            $this->redirect(route('filament.admin.resources.tickets.view', ['record' => $this->record->ticket_id]));
+            $this->redirect(route('filament.admin.resources.tasks.view', ['record' => $this->record->ticket_id]));
         }
     }
 

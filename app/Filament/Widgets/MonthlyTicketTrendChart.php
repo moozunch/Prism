@@ -12,7 +12,7 @@ class MonthlyTicketTrendChart extends ChartWidget
 {
     use HasWidgetShield;
 
-    protected ?string $heading = 'Monthly Ticket Creation Trend';
+    protected ?string $heading = 'Monthly Task Creation Trend';
 
     protected static ?int $sort = 4;
 
@@ -102,7 +102,7 @@ class MonthlyTicketTrendChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Tickets Created',
+                    'label' => 'Tasks Created',
                     'data' => $data,
                     'borderColor' => '#3B82F6',
                     'backgroundColor' => 'rgba(59, 130, 246, 0.1)',

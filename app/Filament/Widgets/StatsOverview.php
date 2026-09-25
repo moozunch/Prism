@@ -9,6 +9,7 @@ use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class StatsOverview extends BaseWidget
@@ -19,16 +20,31 @@ class StatsOverview extends BaseWidget
 
     protected ?string $heading = 'Overview';
 
+    public function canViewOrganizationMetrics(): bool
+    {
+        return auth()->check() && auth()->user()->hasRole(['admin', 'super_admin']);
+    }
+
     protected function getStats(): array
     {
-        $user = auth()->user();
-        $isSuperAdmin = $user->hasRole('super_admin');
-
-        if ($isSuperAdmin) {
+        if ($this->canViewOrganizationMetrics()) {
             return $this->getSuperAdminStats();
-        } else {
-            return $this->getUserStats();
         }
+
+        return $this->getUserStats();
+    }
+
+    protected function getVisibleProjectQuery(): Builder
+    {
+        $query = Project::query();
+
+        if (!$this->canViewOrganizationMetrics()) {
+            $query->whereHas('members', function (Builder $query): void {
+                $query->where('users.id', auth()->id());
+            });
+        }
+
+        return $query;
     }
 
     protected function getSuperAdminStats(): array
@@ -47,13 +63,13 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-rectangle-stack')
                 ->color('primary'),
 
-            Stat::make('Total Tickets', $totalTickets)
-                ->description('Tickets across all projects')
+            Stat::make('Total Tasks', $totalTickets)
+                ->description('Tasks across all projects')
                 ->descriptionIcon('heroicon-m-ticket')
                 ->color('success'),
 
-            Stat::make('My Assigned Tickets', $myTickets)
-                ->description('Tickets assigned to you')
+            Stat::make('My Assigned Tasks', $myTickets)
+                ->description('Tasks assigned to you')
                 ->descriptionIcon('heroicon-m-user-circle')
                 ->color('info'),
 
@@ -70,7 +86,7 @@ class StatsOverview extends BaseWidget
         
         $myProjects = $user->projects()->count();
         
-        $myProjectIds = $user->projects()->pluck('projects.id')->toArray();
+        $myProjectIds = $this->getVisibleProjectQuery()->pluck('projects.id')->toArray();
 
         $projectTickets = Ticket::whereIn('project_id', $myProjectIds)->count();
 
@@ -111,23 +127,23 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-rectangle-stack')
                 ->color('primary'),
 
-            Stat::make('My Assigned Tickets', $myAssignedTickets)
-                ->description('Tickets assigned to you')
+            Stat::make('My Assigned Tasks', $myAssignedTickets)
+                ->description('Tasks assigned to you')
                 ->descriptionIcon('heroicon-m-user-circle')
                 ->color($myAssignedTickets > 10 ? 'danger' : ($myAssignedTickets > 5 ? 'warning' : 'success')),
 
-            Stat::make('My Created Tickets', $myCreatedTickets)
-                ->description('Tickets you created')
+            Stat::make('My Created Tasks', $myCreatedTickets)
+                ->description('Tasks you created')
                 ->descriptionIcon('heroicon-m-pencil-square')
                 ->color('info'),
 
-            Stat::make('Project Tickets', $projectTickets)
-                ->description('Total tickets in your projects')
+            Stat::make('Project Tasks', $projectTickets)
+                ->description('Total tasks in your projects')
                 ->descriptionIcon('heroicon-m-ticket')
                 ->color('success'),
 
             Stat::make('Completed This Week', $myCompletedThisWeek)
-                ->description('Your completed tickets')
+                ->description('Your completed tasks')
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color($myCompletedThisWeek > 0 ? 'success' : 'gray'),
 
@@ -137,7 +153,7 @@ class StatsOverview extends BaseWidget
                 ->color('info'),
 
             Stat::make('My Overdue Tasks', $myOverdueTickets)
-                ->description('Your past due tickets')
+                ->description('Your past due tasks')
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color($myOverdueTickets > 0 ? 'danger' : 'success'),
 

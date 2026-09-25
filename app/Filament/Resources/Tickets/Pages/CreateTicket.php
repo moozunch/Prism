@@ -102,7 +102,7 @@ class CreateTicket extends CreateRecord
                         Notification::make()
                             ->info()
                             ->title('Auto-assigned')
-                            ->body('No valid assignees found. You have been automatically assigned to this ticket.')
+                            ->body('No valid assignees found. You have been automatically assigned to this task.')
                             ->send();
                     }
                 }
@@ -136,7 +136,7 @@ class CreateTicket extends CreateRecord
     {
         return Notification::make()
             ->success()
-            ->title('Ticket created')
-            ->body('The ticket has been created successfully.');
+            ->title('Task created')
+            ->body('The task has been created successfully.');
     }
 }

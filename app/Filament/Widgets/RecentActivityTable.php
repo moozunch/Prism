@@ -33,7 +33,7 @@ class RecentActivityTable extends BaseWidget
             ->query(
                 TicketHistory::query()
                     ->with(['ticket.project', 'user', 'status'])
-                    ->when(!auth()->user()->hasRole('super_admin'), function ($query) {
+                    ->when(!auth()->user()->hasRole(['admin', 'super_admin']), function ($query) {
                         $query->whereHas('ticket.project.members', function ($subQuery) {
                             $subQuery->where('user_id', auth()->id());
                         });
@@ -44,7 +44,7 @@ class RecentActivityTable extends BaseWidget
                 TextColumn::make('activity_summary')
                     ->label('Activity')
                     ->state(function (TicketHistory $record): string {
-                        $ticketName = $record->ticket->name ?? 'Unknown ticket';
+                        $ticketName = $record->ticket->name ?? 'Unknown task';
                         $trimmedName = strlen($ticketName) > 40 ? substr($ticketName, 0, 40) . '...' : $ticketName;
                         $userName = $record->user->name ?? 'Unknown user';
                         return "<span class='text-primary-600 font-medium'>{$userName}</span> changed \"{$trimmedName}\"";
@@ -121,20 +121,20 @@ class RecentActivityTable extends BaseWidget
                     ->label('')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->size('sm')
-                    ->tooltip('Open Ticket')
+                    ->tooltip('Open Task')
                     ->url(fn (TicketHistory $record): string => 
-                        route('filament.admin.resources.tickets.view', $record->ticket)
+                        route('filament.admin.resources.tasks.view', $record->ticket)
                     )
                     ->openUrlInNewTab()
             ])
             ->recordUrl(fn (TicketHistory $record) => 
-                route('filament.admin.resources.tickets.view', $record->ticket)
+                route('filament.admin.resources.tasks.view', $record->ticket)
             )
             ->paginated([5, 25, 50])
             ->poll('30s')
             ->striped()
             ->emptyStateHeading('No Activity Found')
-            ->emptyStateDescription('No ticket activities found for the selected period.')
+            ->emptyStateDescription('No task activities found for the selected period.')
             ->emptyStateIcon('heroicon-o-clock');
     }
 }

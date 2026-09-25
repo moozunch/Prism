@@ -39,5 +39,14 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('APP_URL') . '/auth/google/callback',
+        'calendar' => [
+            'enabled' => (bool) env('GOOGLE_CALENDAR_ENABLED', false),
+            'access_token' => env('GOOGLE_ACCESS_TOKEN'),
+            'calendar_id' => env('GOOGLE_CALENDAR_ID', 'primary'),
+        ],
+        'drive' => [
+            'enabled' => (bool) env('GOOGLE_DRIVE_ENABLED', false),
+            'access_token' => env('GOOGLE_ACCESS_TOKEN'),
+        ],
     ],
 ];
