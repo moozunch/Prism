@@ -3,15 +3,18 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Daftar resource Filament
+        /*
+        |--------------------------------------------------------------------------
+        | Filament Resources
+        |--------------------------------------------------------------------------
+        */
         $resources = [
             'project',
             'ticket',
@@ -21,46 +24,102 @@ class RoleSeeder extends Seeder
             'user',
         ];
 
-        $actions = ['view', 'view_any', 'create', 'update', 'delete'];
+        $actions = [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+        ];
 
-        // Buat permission granular untuk setiap resource
-        $permissions = [];
+        /*
+        |--------------------------------------------------------------------------
+        | Create Permissions
+        |--------------------------------------------------------------------------
+        */
         foreach ($resources as $resource) {
             foreach ($actions as $action) {
-                $permissions[] = $action . '_' . $resource;
+                Permission::firstOrCreate(
+                    [
+                        'name' => "{$action}_{$resource}",
+                        'guard_name' => 'web',
+                    ]
+                );
             }
         }
 
-        // Insert permissions jika belum ada
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Create Roles
+        |--------------------------------------------------------------------------
+        */
+        $superAdmin = Role::firstOrCreate([
+            'name' => 'super_admin',
+            'guard_name' => 'web',
+        ]);
 
-        // Buat role super_admin, admin, member
-        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
-        $admin = Role::firstOrCreate(['name' => 'admin']);
-        $member = Role::firstOrCreate(['name' => 'member']);
+        $admin = Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'web',
+        ]);
 
-        // super_admin: semua permission
-        $superAdmin->syncPermissions(Permission::all());
+        $member = Role::firstOrCreate([
+            'name' => 'member',
+            'guard_name' => 'web',
+        ]);
 
-        // admin: semua permission kecuali user delete
-        $adminPermissions = Permission::whereNotIn('name', ['delete_user'])->get();
-        $admin->syncPermissions($adminPermissions);
+        /*
+        |--------------------------------------------------------------------------
+        | SUPER ADMIN
+        |--------------------------------------------------------------------------
+        | Super Admin mendapatkan semua permission.
+        */
+        $superAdmin->syncPermissions(
+            Permission::all()
+        );
 
-        // member: hanya view/view_any project, ticket, ticket_priority, ticket_comment, notification, dan update ticket (untuk drag & drop)
-        $memberPermissions = Permission::where(function($q) {
-            $q->whereIn('name', [
-                'view_project', 'view_any_project',
-                'view_ticket', 'view_any_ticket', 'update_ticket',
-                'view_ticket_priority', 'view_any_ticket_priority',
-                'view_ticket_comment', 'view_any_ticket_comment',
-                'view_notification', 'view_any_notification',
-            ]);
-        })->get();
-        $member->syncPermissions($memberPermissions);
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN
+        |--------------------------------------------------------------------------
+        | Admin mendapatkan semua permission kecuali delete user.
+        */
+        $adminPermissions = Permission::whereNotIn(
+            'name',
+            ['delete_user']
+        )->get();
 
-        // Otomatis assign role member ke user baru (hanya contoh, implementasi production sebaiknya di observer User::created)
-        // User::whereDoesntHave('roles')->update(['role_id' => $member->id]);
+        $admin->syncPermissions(
+            $adminPermissions
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | MEMBER
+        |--------------------------------------------------------------------------
+        | Member hanya dapat melihat data dan update ticket
+        | untuk kebutuhan board / drag & drop.
+        */
+        $memberPermissions = Permission::whereIn('name', [
+            'view_project',
+            'view_any_project',
+
+            'view_ticket',
+            'view_any_ticket',
+            'update_ticket',
+
+            'view_ticket_priority',
+            'view_any_ticket_priority',
+
+            'view_ticket_comment',
+            'view_any_ticket_comment',
+
+            'view_notification',
+            'view_any_notification',
+        ])->get();
+
+        $member->syncPermissions(
+            $memberPermissions
+        );
     }
 }

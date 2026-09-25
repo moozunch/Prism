@@ -226,7 +226,7 @@
     </div>
 
     @push('styles')
-        <link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" type="text/css">
+        <link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/9.1/dhtmlxgantt.css" type="text/css">
         <link rel="stylesheet" href="{{ asset('css/gantt-timeline.css') }}" type="text/css">
         <style>
             /* Today marker line styling */
@@ -250,7 +250,7 @@
     @endpush
 
     @push('scripts')
-        <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+        <script src="https://cdn.dhtmlx.com/gantt/9.1/dhtmlxgantt.js"></script>
         <script>
             window.ganttState = window.ganttState || {
                 initialized: false,

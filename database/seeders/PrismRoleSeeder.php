@@ -9,7 +9,17 @@ class PrismRoleSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach (['division_head', 'project_manager'] as $roleName) {
+        /*
+        |--------------------------------------------------------------------------
+        | PRISM Custom Roles
+        |--------------------------------------------------------------------------
+        */
+        $roles = [
+            'division_head',
+            'project_manager',
+        ];
+
+        foreach ($roles as $roleName) {
             Role::firstOrCreate([
                 'name' => $roleName,
                 'guard_name' => 'web',

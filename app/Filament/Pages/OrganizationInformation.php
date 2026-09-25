@@ -6,12 +6,12 @@ use App\Models\Organization;
 use BackedEnum;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form; // Mengganti Filament\Schemas\Schema
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use UnitEnum;
 
 class OrganizationInformation extends Page implements HasForms
@@ -23,6 +23,8 @@ class OrganizationInformation extends Page implements HasForms
     protected static ?string $navigationLabel = 'Organization Information';
     protected static ?string $title = 'Organization Information';
     protected static ?int $navigationSort = 1;
+    
+    // Properti ini sudah benar tidak menggunakan static
     protected string $view = 'filament.pages.organization-information';
 
     public ?array $data = [];
@@ -34,21 +36,26 @@ class OrganizationInformation extends Page implements HasForms
 
     public function mount(): void
     {
+        // Pengamanan jika tabel belum memiliki data
         $organization = Organization::profile();
 
-        $this->form->fill($organization->only([
-            'name',
-            'email',
-            'phone',
-            'address',
-            'description',
-        ]));
+        if ($organization) {
+            $this->form->fill($organization->only([
+                'name',
+                'email',
+                'phone',
+                'address',
+                'description',
+            ]));
+        } else {
+            $this->form->fill();
+        }
     }
 
-    public function form(Schema $schema): Schema
+    public function form(Form $form): Form
     {
-        return $schema
-            ->components([
+        return $form
+            ->schema([
                 Section::make('Organization Profile')
                     ->schema([
                         TextInput::make('name')
@@ -76,7 +83,12 @@ class OrganizationInformation extends Page implements HasForms
     public function save(): void
     {
         $organization = Organization::profile();
-        $organization->update($this->form->getState());
+        
+        if (!$organization) {
+            Organization::create($this->form->getState());
+        } else {
+            $organization->update($this->form->getState());
+        }
 
         Notification::make()
             ->title('Organization information saved')

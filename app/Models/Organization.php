@@ -12,6 +12,7 @@ class Organization extends Model
     public const SINGLETON_KEY = 'default';
 
     protected $fillable = [
+        'singleton_key',
         'name',
         'email',
         'phone',
