@@ -5,9 +5,11 @@ namespace App\Filament\Resources\Tickets\Pages;
 use App\Filament\Resources\Tickets\TicketResource;
 use App\Models\Project;
 use App\Models\Ticket;
+use App\Models\User;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class CreateTicket extends CreateRecord
 {
@@ -18,23 +20,38 @@ class CreateTicket extends CreateRecord
         $copyFromId = request()->query('copy_from');
 
         if ($copyFromId) {
-            $ticket = auth()->user()->hasRole(['super_admin'])
+            $user = Auth::user();
+
+            if (!$user instanceof User) {
+                abort(403);
+            }
+
+            $userId = $user->id;
+
+            $ticket = $user->hasRole('super_admin')
                 ? Ticket::find($copyFromId)
                 : Ticket::query()
                     ->where('id', $copyFromId)
-                    ->where(function ($query) {
-                        $query->whereHas('assignees', function ($query) {
-                            $query->where('users.id', auth()->id());
-                        })
-                            ->orWhere('created_by', auth()->id())
-                            ->orWhereHas('project.members', function ($query) {
-                                $query->where('users.id', auth()->id());
-                            });
+                    ->where(function ($query) use ($userId) {
+                        $query->whereHas(
+                            'assignees',
+                            function ($query) use ($userId) {
+                                $query->where('users.id', $userId);
+                            }
+                        )
+                        ->orWhere('created_by', $userId)
+                        ->orWhereHas(
+                            'project.members',
+                            function ($query) use ($userId) {
+                                $query->where('users.id', $userId);
+                            }
+                        );
                     })
                     ->first();
 
             if ($ticket) {
                 $data = $ticket->toArray();
+
                 unset(
                     $data['id'],
                     $data['uuid'],
@@ -43,7 +60,10 @@ class CreateTicket extends CreateRecord
                     $data['created_by']
                 );
 
-                $data['assignees'] = $ticket->assignees()->pluck('users.id')->toArray();
+                $data['assignees'] = $ticket->assignees()
+                    ->pluck('users.id')
+                    ->toArray();
+
                 $this->form->fill($data);
 
                 return;
@@ -55,70 +75,87 @@ class CreateTicket extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::id();
 
         return $data;
     }
 
-    protected function handleRecordCreation(array $data): Model
+    protected function beforeCreate(): void
     {
-        $ticket = parent::handleRecordCreation($data);
+        $assignees = $this->data['assignees'] ?? [];
+        $projectId = $this->data['project_id'] ?? null;
 
-        if (! empty($data['assignees']) && ! empty($data['project_id'])) {
-            $project = Project::find($data['project_id']);
-
-            if ($project) {
-                $validAssignees = [];
-                $invalidAssignees = [];
-
-                foreach ($data['assignees'] as $userId) {
-                    $isMember = $project->members()->where('users.id', $userId)->exists();
-
-                    if ($isMember) {
-                        $validAssignees[] = $userId;
-                    } else {
-                        $invalidAssignees[] = $userId;
-                    }
-                }
-
-                if (! empty($validAssignees)) {
-                    $ticket->assignees()->sync($validAssignees);
-                }
-
-                if (! empty($invalidAssignees)) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Some assignees removed')
-                        ->body('Some selected users are not members of this project and have been removed from assignees.')
-                        ->send();
-                }
-
-                if (empty($validAssignees)) {
-                    $currentUserIsMember = $project->members()->where('users.id', auth()->id())->exists();
-
-                    if ($currentUserIsMember) {
-                        $ticket->assignees()->sync([auth()->id()]);
-
-                        Notification::make()
-                            ->info()
-                            ->title('Auto-assigned')
-                            ->body('No valid assignees found. You have been automatically assigned to this task.')
-                            ->send();
-                    }
-                }
-            }
-        } else {
-            if (! empty($data['project_id'])) {
-                $project = Project::find($data['project_id']);
-                $currentUserIsMember = $project?->members()->where('users.id', auth()->id())->exists();
-
-                if ($currentUserIsMember) {
-                    $ticket->assignees()->sync([auth()->id()]);
-                }
-            }
+        if (!is_array($assignees)) {
+            throw ValidationException::withMessages([
+                'data.assignees' => 'Invalid assignee selection.',
+            ]);
         }
 
-        return $ticket;
+        $project = Project::find($projectId);
+
+        if (!$project) {
+            throw ValidationException::withMessages([
+                'data.project_id' => 'The selected project is invalid.',
+            ]);
+        }
+
+        $assigneeIds = array_values(array_unique(
+            array_map('intval', $assignees)
+        ));
+
+        if (empty($assigneeIds)) {
+            return;
+        }
+
+        $validIds = $project->members()
+            ->whereIn('users.id', $assigneeIds)
+            ->pluck('users.id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
+
+        $invalidIds = array_diff($assigneeIds, $validIds);
+
+        if (!empty($invalidIds)) {
+            throw ValidationException::withMessages([
+                'data.assignees' =>
+                    'All assignees must be members of the selected project.',
+            ]);
+        }
+    }
+
+    protected function afterCreate(): void
+    {
+        $ticket = $this->record;
+
+
+        if ($ticket->assignees()->exists()) {
+            return;
+        }
+
+        $project = Project::find($ticket->project_id);
+
+        $userId = Auth::id();
+
+        if (!$userId) {
+            return;
+        }
+
+        $currentUserIsMember = $project?->members()
+            ->where('users.id', $userId)
+            ->exists();
+
+        if ($currentUserIsMember) {
+            $ticket->assignees()
+                ->syncWithoutDetaching([$userId]);
+
+            Notification::make()
+                ->info()
+                ->title('Auto-assigned')
+                ->body(
+                    'No assignees selected. You have been automatically assigned to this task.'
+                )
+                ->send();
+        }
     }
 
     protected function getRedirectUrl(): string

@@ -40,27 +40,48 @@ class UserResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+
                 TextInput::make('email')
+                    ->label('Email Login')
                     ->email()
                     ->required()
-                    ->unique(
-                        ignoreRecord: true
-                    )
+                    ->unique(ignoreRecord: true)
                     ->maxLength(255),
+
+                TextInput::make('calendar_email')
+                    ->label('Calendar Email')
+                    ->email()
+                    ->maxLength(254)
+                    ->placeholder('example@gmail.com')
+                    ->helperText(
+                        'Optional. Used to receive task invitations in Google Calendar. Does not change the PRISM login email.'
+                    ),
+
                 Select::make('division_id')
                     ->label('Division')
                     ->relationship('division', 'name')
                     ->searchable()
                     ->preload()
                     ->nullable(),
+
                 DateTimePicker::make('email_verified_at'),
+
                 TextInput::make('password')
                     ->password()
-                    ->dehydrateStateUsing(fn ($state) => ! empty($state) ? Hash::make($state) : null
+                    ->dehydrateStateUsing(
+                        fn ($state) => ! empty($state)
+                            ? Hash::make($state)
+                            : null
                     )
                     ->dehydrated(fn ($state) => ! empty($state))
-                    ->required(fn (string $operation): bool => in_array($operation, ['create', 'attach.createOption']))
+                    ->required(
+                        fn (string $operation): bool => in_array(
+                            $operation,
+                            ['create', 'attach.createOption']
+                        )
+                    )
                     ->maxLength(255),
+
                 Select::make('roles')
                     ->relationship('roles', 'name')
                     ->multiple()
@@ -78,8 +99,15 @@ class UserResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('email')
+                    ->label('Email Login')
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('calendar_email')
+                    ->label('Calendar Email')
+                    ->searchable()
+                    ->placeholder('Not set')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('division.name')
                     ->label('Division')
@@ -91,13 +119,21 @@ class UserResource extends Resource
                     ->label('Roles')
                     ->badge()
                     ->separator(',')
-                    ->tooltip(fn (User $record): string => $record->roles->pluck('name')->join(', ') ?: 'No Roles')
+                    ->tooltip(
+                        fn (User $record): string =>
+                            $record->roles->pluck('name')->join(', ')
+                            ?: 'No Roles'
+                    )
                     ->sortable(),
 
                 TextColumn::make('projects_count')
                     ->label('Projects')
                     ->counts('projects')
-                    ->tooltip(fn (User $record): string => $record->projects->pluck('name')->join(', ') ?: 'No Projects')
+                    ->tooltip(
+                        fn (User $record): string =>
+                            $record->projects->pluck('name')->join(', ')
+                            ?: 'No Projects'
+                    )
                     ->sortable(),
 
                 TextColumn::make('assigned_tickets_count')
@@ -108,9 +144,11 @@ class UserResource extends Resource
 
                 TextColumn::make('created_tickets_count')
                     ->label('Created Tasks')
-                    ->getStateUsing(function (User $record): int {
-                        return $record->createdTickets()->count();
-                    })
+                    ->getStateUsing(
+                        function (User $record): int {
+                            return $record->createdTickets()->count();
+                        }
+                    )
                     ->tooltip('Number of tasks created by this user')
                     ->sortable(),
 
@@ -132,17 +170,25 @@ class UserResource extends Resource
             ->filters([
                 Filter::make('has_projects')
                     ->label('Has Projects')
-                    ->query(fn (Builder $query): Builder => $query->whereHas('projects')),
+                    ->query(
+                        fn (Builder $query): Builder =>
+                            $query->whereHas('projects')
+                    ),
 
                 Filter::make('has_assigned_tickets')
                     ->label('Has Assigned Tasks')
-                    ->query(fn (Builder $query): Builder => $query->whereHas('assignedTickets')),
+                    ->query(
+                        fn (Builder $query): Builder =>
+                            $query->whereHas('assignedTickets')
+                    ),
 
                 Filter::make('has_created_tickets')
                     ->label('Has Created Tickets')
-                    ->query(fn (Builder $query): Builder => $query->whereHas('createdTickets')),
+                    ->query(
+                        fn (Builder $query): Builder =>
+                            $query->whereHas('createdTickets')
+                    ),
 
-                // Filter by role
                 SelectFilter::make('roles')
                     ->relationship('roles', 'name')
                     ->multiple()
@@ -151,7 +197,10 @@ class UserResource extends Resource
 
                 Filter::make('email_unverified')
                     ->label('Email Unverified')
-                    ->query(fn (Builder $query): Builder => $query->whereNull('email_verified_at')),
+                    ->query(
+                        fn (Builder $query): Builder =>
+                            $query->whereNull('email_verified_at')
+                    ),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -161,7 +210,6 @@ class UserResource extends Resource
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
 
-                    // NEW: Bulk action to assign role
                     BulkAction::make('assignRole')
                         ->label('Assign Role')
                         ->icon('heroicon-o-shield-check')
@@ -188,7 +236,8 @@ class UserResource extends Resource
                                 if ($data['role_mode'] === 'replace') {
                                     $record->roles()->sync($data['roles']);
                                 } else {
-                                    $record->roles()->syncWithoutDetaching($data['roles']);
+                                    $record->roles()
+                                        ->syncWithoutDetaching($data['roles']);
                                 }
                             }
                         }),

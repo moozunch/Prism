@@ -8,9 +8,10 @@ use Filament\Panel;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -28,6 +29,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'calendar_email',
         'email_verified_at',
         'password',
         'google_id',
@@ -57,6 +59,17 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         ];
     }
 
+    /**
+     * Google OAuth connection.
+     */
+    public function googleConnection(): HasOne
+    {
+        return $this->hasOne(GoogleConnection::class);
+    }
+
+    /**
+     * Projects the user belongs to.
+     */
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_members')
@@ -64,21 +77,33 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             ->withTimestamps();
     }
 
+    /**
+     * User division.
+     */
     public function division(): BelongsTo
     {
         return $this->belongsTo(Division::class);
     }
 
+    /**
+     * User tickets.
+     */
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
     }
 
+    /**
+     * Tickets assigned to this user.
+     */
     public function assignedTickets(): BelongsToMany
     {
         return $this->belongsToMany(Ticket::class, 'ticket_users');
     }
 
+    /**
+     * Tickets created by this user.
+     */
     public function createdTickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'created_by');
@@ -86,22 +111,31 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function isAssignedToTicket(Ticket $ticket): bool
     {
-        return $this->assignedTickets()->where('ticket_id', $ticket->id)->exists();
+        return $this->assignedTickets()
+            ->where('ticket_id', $ticket->id)
+            ->exists();
     }
 
     public function assignToTicket(Ticket $ticket): void
     {
-        $this->assignedTickets()->syncWithoutDetaching($ticket->id);
+        $this->assignedTickets()
+            ->syncWithoutDetaching($ticket->id);
     }
 
+    /**
+     * User notifications.
+     */
     public function notifications(): HasMany
     {
-        return $this->hasMany(Notification::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(Notification::class)
+            ->orderBy('created_at', 'desc');
     }
 
     public function unreadNotifications(): HasMany
     {
-        return $this->hasMany(Notification::class)->unread()->orderBy('created_at', 'desc');
+        return $this->hasMany(Notification::class)
+            ->unread()
+            ->orderBy('created_at', 'desc');
     }
 
     public function getUnreadNotificationsCountAttribute(): int
@@ -109,6 +143,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->unreadNotifications()->count();
     }
 
+    /**
+     * Role helpers.
+     */
     public function isOrganizationAdmin(): bool
     {
         return $this->hasRole('admin');
@@ -129,8 +166,12 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasRole('member');
     }
 
+    /**
+     * Filament panel access.
+     */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasVerifiedEmail() && $this->roles()->exists();
+        return $this->hasVerifiedEmail()
+            && $this->roles()->exists();
     }
 }
