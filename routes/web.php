@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Integrations\GoogleIntegrationController;
 use App\Http\Controllers\AttachmentController;
 
 Route::get('/', function () {
@@ -14,3 +15,18 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 
 Route::middleware('auth')->get('attachments/{attachment}/view', [AttachmentController::class, 'view'])
     ->name('attachments.view');
+
+Route::middleware(['auth', 'verified'])
+->prefix('integrations/google')
+->name('integrations.google.')
+->group(function () {
+    Route::get('/connect', [
+        GoogleIntegrationController::class,
+        'connect',
+    ])->name('connect');
+
+    Route::get('/callback', [
+        GoogleIntegrationController::class,
+        'callback',
+    ])->name('callback');
+});

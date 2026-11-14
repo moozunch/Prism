@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Ticket extends Model
@@ -42,9 +44,8 @@ class Ticket extends Model
                 $ticket->uuid = "{$prefix}-{$randomString}";
             }
 
-            // Set created_by jika belum di-set dan ada user yang login
-            if (empty($ticket->created_by) && auth()->id()) {
-                $ticket->created_by = auth()->id();
+            if (empty($ticket->created_by) && Auth::id()) {
+                $ticket->created_by = Auth::id();
             }
         });
 
@@ -52,7 +53,7 @@ class Ticket extends Model
             if ($ticket->isDirty('ticket_status_id')) {
                 TicketHistory::create([
                     'ticket_id' => $ticket->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::id(),
                     'ticket_status_id' => $ticket->ticket_status_id,
                 ]);
             }
@@ -66,42 +67,68 @@ class Ticket extends Model
 
     public function status(): BelongsTo
     {
-        return $this->belongsTo(TicketStatus::class, 'ticket_status_id');
+        return $this->belongsTo(
+            TicketStatus::class,
+            'ticket_status_id'
+        );
     }
 
     public function assignees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'ticket_users');
+        return $this->belongsToMany(
+            User::class,
+            'ticket_users'
+        );
     }
 
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(
+            User::class,
+            'created_by'
+        );
     }
 
     public function histories(): HasMany
     {
-        return $this->hasMany(TicketHistory::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(TicketHistory::class)
+            ->orderBy('created_at', 'desc');
     }
 
     public function comments(): HasMany
     {
-        return $this->hasMany(TicketComment::class)->orderBy('created_at', 'asc');
+        return $this->hasMany(TicketComment::class)
+            ->orderBy('created_at', 'asc');
     }
 
     public function attachments(): MorphMany
     {
-        return $this->morphMany(Attachment::class, 'attachable');
+        return $this->morphMany(
+            Attachment::class,
+            'attachable'
+        );
     }
 
     public function priority(): BelongsTo
     {
-        return $this->belongsTo(TicketPriority::class, 'priority_id');
+        return $this->belongsTo(
+            TicketPriority::class,
+            'priority_id'
+        );
+    }
+
+    /**
+     * Relasi task dengan Google Calendar Event.
+     */
+    public function googleCalendarEvent(): HasOne
+    {
+        return $this->hasOne(GoogleCalendarEvent::class);
     }
 
     public function assignUser(User $user): void
     {
-        $this->assignees()->syncWithoutDetaching($user->id);
+        $this->assignees()
+            ->syncWithoutDetaching($user->id);
     }
 
     public function unassignUser(User $user): void
@@ -116,6 +143,8 @@ class Ticket extends Model
 
     public function isAssignedTo(User $user): bool
     {
-        return $this->assignees()->where('user_id', $user->id)->exists();
+        return $this->assignees()
+            ->where('user_id', $user->id)
+            ->exists();
     }
 }

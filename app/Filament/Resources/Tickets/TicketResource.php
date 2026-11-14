@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tickets;
 
 use App\Models\Ticket;
+use App\Models\User;
 use App\Models\Project;
 use Filament\Tables\Table;
 use App\Models\TicketStatus;
@@ -23,7 +24,9 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Notifications\Notification;
 use App\Filament\Resources\Tickets\Pages\EditTicket;
 use App\Filament\Resources\Tickets\Pages\ViewTicket;
 use App\Filament\Resources\Tickets\Pages\ListTickets;
@@ -50,15 +53,22 @@ class TicketResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
+        $user = Auth::user();
 
-        if (!auth()->user()->hasRole(['super_admin'])) {
-            $query->where(function ($query) {
-                $query->whereHas('assignees', function ($query) {
-                    $query->where('users.id', auth()->id());
+        if (!$user instanceof User) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if (!$user->hasRole('super_admin')) {
+            $userId = $user->id;
+
+            $query->where(function (Builder $query) use ($userId) {
+                $query->whereHas('assignees', function (Builder $query) use ($userId) {
+                    $query->where('users.id', $userId);
                 })
-                    ->orWhere('created_by', auth()->id())
-                    ->orWhereHas('project.members', function ($query) {
-                        $query->where('users.id', auth()->id());
+                    ->orWhere('created_by', $userId)
+                    ->orWhereHas('project.members', function (Builder $query) use ($userId) {
+                        $query->where('users.id', $userId);
                     });
             });
         }
@@ -76,11 +86,17 @@ class TicketResource extends Resource
                 Select::make('project_id')
                     ->label('Project')
                     ->options(function () {
-                        if (auth()->user()->hasRole(['super_admin'])) {
+                        $user = Auth::user();
+
+                        if (!$user instanceof User) {
+                            return [];
+                        }
+
+                        if ($user->hasRole('super_admin')) {
                             return Project::pluck('name', 'id')->toArray();
                         }
 
-                        return auth()->user()->projects()->pluck('name', 'projects.id')->toArray();
+                        return $user->projects()->pluck('name', 'projects.id')->toArray();
                     })
                     ->default($projectId)
                     ->disabledOn('ticket_on_board')
@@ -128,10 +144,16 @@ class TicketResource extends Resource
                     ->fileAttachmentsDisk('public')
                     ->fileAttachmentsDirectory('attachments')
                     ->fileAttachmentsVisibility('public')
-                    ->fileAttachmentsAcceptedFileTypes(['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'video/mp4'])
+                    ->fileAttachmentsAcceptedFileTypes([
+                        'image/png',
+                        'image/jpeg',
+                        'image/gif',
+                        'image/webp',
+                        'video/mp4',
+                    ])
                     ->columnSpanFull(),
 
-                // // Multi-user assignment
+                // Multi-user assignment
                 Select::make('assignees')
                     ->label('Assigned to')
                     ->multiple()
@@ -140,11 +162,13 @@ class TicketResource extends Resource
                         titleAttribute: 'name',
                         modifyQueryUsing: function (Builder $query, Get $get) {
                             $projectId = $get('project_id');
+
                             if (!$projectId) {
                                 return $query->whereRaw('1 = 0');
                             }
 
                             $project = Project::find($projectId);
+
                             if (!$project) {
                                 return $query->whereRaw('1 = 0');
                             }
@@ -156,8 +180,10 @@ class TicketResource extends Resource
                     )
                     ->searchable()
                     ->preload()
-                    ->helperText('Select multiple users to assign this task to. Only project members can be assigned.')
-                    ->hidden(fn(Get $get): bool => !$get('project_id'))
+                    ->helperText(
+                        'Select multiple users to assign this task to. Only project members can be assigned.'
+                    )
+                    ->hidden(fn (Get $get): bool => !$get('project_id'))
                     ->live(),
 
                 DatePicker::make('start_date')
@@ -168,6 +194,7 @@ class TicketResource extends Resource
                 DatePicker::make('due_date')
                     ->label('Due Date')
                     ->nullable(),
+
                 Select::make('created_by')
                     ->label('Created By')
                     ->relationship('creator', 'name')
@@ -212,7 +239,7 @@ class TicketResource extends Resource
                 TextColumn::make('priority.name')
                     ->label('Priority')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'High' => 'danger',
                         'Medium' => 'warning',
                         'Low' => 'success',
@@ -222,7 +249,6 @@ class TicketResource extends Resource
                     ->default('—')
                     ->placeholder('No Priority'),
 
-                // Display multiple assignees
                 TextColumn::make('assignees.name')
                     ->label('Assign To')
                     ->badge()
@@ -256,11 +282,19 @@ class TicketResource extends Resource
                 SelectFilter::make('project_id')
                     ->label('Project')
                     ->options(function () {
-                        if (auth()->user()->hasRole(['super_admin'])) {
+                        $user = Auth::user();
+
+                        if (!$user instanceof User) {
+                            return [];
+                        }
+
+                        if ($user->hasRole('super_admin')) {
                             return Project::pluck('name', 'id')->toArray();
                         }
 
-                        return auth()->user()->projects()->pluck('name', 'projects.id')->toArray();
+                        return $user->projects()
+                            ->pluck('name', 'projects.id')
+                            ->toArray();
                     })
                     ->searchable()
                     ->preload(),
@@ -287,7 +321,6 @@ class TicketResource extends Resource
                     ->searchable()
                     ->preload(),
 
-                // Filter by assignees
                 SelectFilter::make('assignees')
                     ->label('Assignee')
                     ->relationship('assignees', 'name')
@@ -295,7 +328,6 @@ class TicketResource extends Resource
                     ->searchable()
                     ->preload(),
 
-                // Filter by creator
                 SelectFilter::make('created_by')
                     ->label('Created By')
                     ->relationship('creator', 'name')
@@ -311,11 +343,13 @@ class TicketResource extends Resource
                         return $query
                             ->when(
                                 $data['due_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('due_date', '>=', $date),
+                                fn (Builder $query, $date): Builder =>
+                                    $query->whereDate('due_date', '>=', $date),
                             )
                             ->when(
                                 $data['due_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('due_date', '<=', $date),
+                                fn (Builder $query, $date): Builder =>
+                                    $query->whereDate('due_date', '<=', $date),
                             );
                     }),
             ])
@@ -323,24 +357,28 @@ class TicketResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+
                 Action::make('copy')
                     ->label('Copy')
                     ->icon('heroicon-o-document-duplicate')
                     ->color('info')
                     ->action(function ($record, $livewire) {
-                        // Redirect ke halaman create, dengan parameter copy_from
                         return $livewire->redirect(
                             static::getUrl('create', [
                                 'copy_from' => $record->id,
                             ])
                         );
                     }),
+
                 Action::make('pushToGoogleCalendar')
                     ->label('Add to Google Calendar')
                     ->icon('heroicon-o-calendar-days')
-                    ->visible(fn (): bool => (bool) config('services.google.calendar.enabled'))
+                    ->visible(fn (): bool =>
+                        (bool) config('services.google.calendar.enabled')
+                    )
                     ->action(function (Ticket $record): void {
-                        $event = app(GoogleCalendarService::class)->createTaskDeadline($record);
+                        $event = app(GoogleCalendarService::class)
+                            ->createTaskDeadline($record);
 
                         if ($event) {
                             Notification::make()
@@ -353,26 +391,34 @@ class TicketResource extends Resource
 
                         Notification::make()
                             ->title('Google Calendar unavailable')
-                            ->body('The task was not changed. Check Google configuration and authorization.')
+                            ->body(
+                                'The task was not changed. Check Google configuration and authorization.'
+                            )
                             ->warning()
                             ->send();
                     }),
+
                 Action::make('linkGoogleDriveFile')
                     ->label('Link Google Drive File')
                     ->icon('heroicon-o-paper-clip')
-                    ->visible(fn (): bool => (bool) config('services.google.drive.enabled'))
+                    ->visible(fn (): bool =>
+                        (bool) config('services.google.drive.enabled')
+                    )
                     ->form([
                         TextInput::make('file_id')
                             ->label('Google Drive File ID')
                             ->required(),
                     ])
                     ->action(function (Ticket $record, array $data): void {
-                        $file = app(GoogleDriveService::class)->getFileReference($data['file_id']);
+                        $file = app(GoogleDriveService::class)
+                            ->getFileReference($data['file_id']);
 
                         if ($file) {
                             Notification::make()
                                 ->title('Google Drive file authorized')
-                                ->body($file['name'] ?? 'File reference retrieved.')
+                                ->body(
+                                    $file['name'] ?? 'File reference retrieved.'
+                                )
                                 ->success()
                                 ->send();
 
@@ -381,7 +427,9 @@ class TicketResource extends Resource
 
                         Notification::make()
                             ->title('Google Drive unavailable')
-                            ->body('The task was not changed. Check Google configuration and authorization.')
+                            ->body(
+                                'The task was not changed. Check Google configuration and authorization.'
+                            )
                             ->warning()
                             ->send();
                     }),
@@ -389,7 +437,12 @@ class TicketResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(auth()->user()->hasRole(['super_admin'])),
+                        ->visible(function (): bool {
+                            $user = Auth::user();
+
+                            return $user instanceof User
+                                && $user->hasRole('super_admin');
+                        }),
                 ]),
             ]);
     }

@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\Tickets\Pages;
 
-use Filament\Actions\ViewAction;
-use Filament\Actions\DeleteAction;
 use App\Filament\Resources\Tickets\TicketResource;
 use App\Models\Project;
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
+use Illuminate\Validation\ValidationException;
 
 class EditTicket extends EditRecord
 {
@@ -22,48 +22,55 @@ class EditTicket extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function beforeSave(): void
     {
-        // Handle assignees validation before saving
-        if (!empty($data['assignees']) && !empty($data['project_id'])) {
-            $project = Project::find($data['project_id']);
-            
-            if ($project) {
-                $validAssignees = [];
-                $invalidAssignees = [];
-                
-                foreach ($data['assignees'] as $userId) {
-                    $isMember = $project->members()->where('users.id', $userId)->exists();
-                    
-                    if ($isMember) {
-                        $validAssignees[] = $userId;
-                    } else {
-                        $invalidAssignees[] = $userId;
-                    }
-                }
-                
-                // Update data with only valid assignees
-                $data['assignees'] = $validAssignees;
-                
-                // Show warning if some users were invalid
-                if (!empty($invalidAssignees)) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Some assignees removed')
-                        ->body('Some selected users are not members of this project and have been removed from assignees.')
-                        ->send();
-                }
-            }
+        // The relationship field is automatically saved by Filament.
+        // Validate selected assignees before saving the task.
+
+        $assignees = $this->data['assignees'] ?? null;
+
+        if ($assignees === null) {
+            return;
         }
 
-        return $data;
-    }
+        if (!is_array($assignees)) {
+            throw ValidationException::withMessages([
+                'data.assignees' => 'Invalid assignee selection.',
+            ]);
+        }
 
-    protected function afterSave(): void
-    {
-        // Sync assignees after saving (since it's a many-to-many relationship)
-        if (isset($this->data['assignees']) && is_array($this->data['assignees'])) {
-            $this->record->assignees()->sync($this->data['assignees']);
+        $projectId = $this->data['project_id']
+            ?? $this->record->project_id;
+
+        $project = Project::find($projectId);
+
+        if (!$project) {
+            throw ValidationException::withMessages([
+                'data.project_id' => 'The selected project is invalid.',
+            ]);
+        }
+
+        $assigneeIds = array_values(array_unique(
+            array_map('intval', $assignees)
+        ));
+
+        if (empty($assigneeIds)) {
+            return;
+        }
+
+        $validIds = $project->members()
+            ->whereIn('users.id', $assigneeIds)
+            ->pluck('users.id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
+
+        $invalidIds = array_diff($assigneeIds, $validIds);
+
+        if (!empty($invalidIds)) {
+            throw ValidationException::withMessages([
+                'data.assignees' =>
+                    'All assignees must be members of the selected project.',
+            ]);
         }
     }
 
