@@ -1,19 +1,6 @@
 <?php
 
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Third Party Services
-    |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
-    */
-
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
@@ -39,13 +26,33 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('APP_URL') . '/auth/google/callback',
+
         'calendar' => [
-            'enabled' => (bool) env('GOOGLE_CALENDAR_ENABLED', false),
+            'enabled' => (bool) env(
+                'GOOGLE_CALENDAR_ENABLED',
+                false
+            ),
+
+            'auto_sync_enabled' => (bool) env(
+                'GOOGLE_CALENDAR_AUTO_SYNC_ENABLED',
+                false
+            ),
+
+            'organizer_user_id' => (int) env(
+                'GOOGLE_CALENDAR_ORGANIZER_USER_ID',
+                0
+            ),
+
             'access_token' => env('GOOGLE_ACCESS_TOKEN'),
             'calendar_id' => env('GOOGLE_CALENDAR_ID', 'primary'),
         ],
+
         'drive' => [
-            'enabled' => (bool) env('GOOGLE_DRIVE_ENABLED', false),
+            'enabled' => (bool) env(
+                'GOOGLE_DRIVE_ENABLED',
+                false
+            ),
+
             'access_token' => env('GOOGLE_ACCESS_TOKEN'),
         ],
     ],
