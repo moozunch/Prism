@@ -3,6 +3,13 @@
 use Maatwebsite\Excel\Excel;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 
+// Excel is optional: the application exports CSV without this package.
+// Do not prevent Laravel from booting when the optional integration is absent.
+if (! class_exists(Excel::class) || ! class_exists(Csv::class)) {
+    return [];
+}
+
+
 return [
     'exports' => [
 

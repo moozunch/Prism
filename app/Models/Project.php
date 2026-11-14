@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class Project extends Model
 {
@@ -95,15 +96,27 @@ class Project extends Model
         return $today->diffInDays($endDate);
     }
     
+    public function scopeWithProgressCounts(Builder $query): Builder
+    {
+        return $query->withCount([
+            'tickets as progress_total',
+            'tickets as progress_completed' => fn (Builder $tickets) => $tickets
+                ->whereHas('status', fn (Builder $status) => $status->where('is_completed', true)),
+        ]);
+    }
+
     public function getProgressPercentageAttribute(): float
     {
-        $totalTickets = $this->tickets()->count();
+        // Use explicit, unfiltered aggregate aliases; a loaded tickets relation may be filtered.
+        $hasCounts = array_key_exists('progress_total', $this->attributes)
+            && array_key_exists('progress_completed', $this->attributes);
+        $totalTickets = (int) ($hasCounts ? $this->progress_total : $this->tickets()->count());
         
         if ($totalTickets === 0) {
             return 0.0;
         }
         
-        $completedTickets = $this->tickets()
+        $completedTickets = $hasCounts ? $this->progress_completed : $this->tickets()
             ->whereHas('status', function ($query) {
                 $query->where('is_completed', true);
             })

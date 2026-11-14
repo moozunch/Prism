@@ -133,7 +133,7 @@ class ProjectBoard extends Page
         $this->selectedTicket = null;
         $this->ticketStatuses = collect();
         $this->selectedProjectId = $projectId;
-        $this->selectedProject = Project::with('tickets')->find($projectId);
+        $this->selectedProject = Project::find($projectId);
         $this->selectedUserIds = [];
 
         $this->loadProjectUsers();
@@ -195,17 +195,10 @@ class ProjectBoard extends Page
             return;
         }
 
-        // Get only users who are assigned to tickets in this project
-        $ticketAssigneeIds = $this->selectedProject->tickets()
-            ->with('assignees')
-            ->get()
-            ->flatMap(function ($ticket) {
-                return $ticket->assignees->pluck('id');
-            })
-            ->unique()
-            ->filter();
-
-        $this->projectUsers = User::whereIn('id', $ticketAssigneeIds)
+        // Let the database find distinct assignees instead of hydrating every task.
+        $this->projectUsers = User::whereHas('assignedTickets', function ($query) {
+            $query->where('tickets.project_id', $this->selectedProject->id);
+        })
             ->orderBy('name')
             ->get();
     }

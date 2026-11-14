@@ -237,7 +237,7 @@ class ProjectResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()->withProgressCounts();
 
         $userIsSuperAdmin = auth()->user() && (
             (method_exists(auth()->user(), 'hasRole') && auth()->user()->hasRole('super_admin'))
