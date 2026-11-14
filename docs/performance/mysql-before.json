@@ -1,0 +1,28 @@
+{
+    "project_progress_20_rows": {
+        "ms": 98.561,
+        "queries": 201,
+        "db_ms": 76.4
+    },
+    "reporting_25_rows": {
+        "ms": 29.925,
+        "queries": 54,
+        "db_ms": 22.13
+    },
+    "dashboard_project_timeline": {
+        "ms": 41.107,
+        "queries": 10,
+        "db_ms": 7.93
+    },
+    "board_assignee_options": {
+        "ms": 2.007,
+        "queries": 3,
+        "db_ms": 1.33
+    },
+    "task_timeline_data": {
+        "ms": 10.531,
+        "queries": 12,
+        "db_ms": 5.14
+    },
+    "peak_memory_bytes": 57147392
+}

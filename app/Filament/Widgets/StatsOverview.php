@@ -86,9 +86,12 @@ class StatsOverview extends BaseWidget
         
         $myProjects = $user->projects()->count();
         
-        $myProjectIds = $this->getVisibleProjectQuery()->pluck('projects.id')->toArray();
+        $myProjectIds = $this->getVisibleProjectQuery()->select('projects.id');
 
-        $projectTickets = Ticket::whereIn('project_id', $myProjectIds)->count();
+        $projectTotals = Ticket::whereIn('project_id', $myProjectIds)
+            ->selectRaw('COUNT(*) AS total, COUNT(CASE WHEN created_at >= ? THEN 1 END) AS recent', [Carbon::now()->subDays(7)])
+            ->first();
+        $projectTickets = $projectTotals->total;
 
         $myAssignedTickets = DB::table('tickets')
             ->join('ticket_users', 'tickets.id', '=', 'ticket_users.ticket_id')
@@ -97,9 +100,7 @@ class StatsOverview extends BaseWidget
 
         $myCreatedTickets = Ticket::where('created_by', $user->id)->count();
 
-        $newTicketsThisWeek = Ticket::whereIn('project_id', $myProjectIds)
-            ->where('tickets.created_at', '>=', Carbon::now()->subDays(7))
-            ->count();
+        $newTicketsThisWeek = $projectTotals->recent;
 
         $myOverdueTickets = DB::table('tickets')
             ->join('ticket_users', 'tickets.id', '=', 'ticket_users.ticket_id')

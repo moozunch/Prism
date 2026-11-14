@@ -146,6 +146,7 @@ class TicketTimeline extends Page implements HasForms
                 return ['data' => [], 'links' => []];
             }
 
+            $statuses = $this->selectedProject->ticketStatuses()->orderBy('sort_order')->get();
             $ganttTasks = [];
             $now = Carbon::now();
 
@@ -163,7 +164,7 @@ class TicketTimeline extends Page implements HasForms
                         $endDate = $startDate->copy()->addDays(1);
                     }
 
-                    $progress = $this->getSimpleProgress($ticket->status->name ?? '') / 100;
+                    $progress = $this->getSimpleProgress($ticket->status->name ?? '', $statuses) / 100;
                     $isOverdue = $endDate->lt($now) && $progress < 1;
 
                     $taskData = [
@@ -205,17 +206,13 @@ class TicketTimeline extends Page implements HasForms
         return strlen($name) > $length ? substr($name, 0, $length) . '...' : $name;
     }
 
-    private function getSimpleProgress($statusName): int
+    private function getSimpleProgress($statusName, Collection $statuses): int
     {
         if (!$this->selectedProject || empty($statusName)) {
             return 0;
         }
 
         try {
-            $statuses = $this->selectedProject->ticketStatuses()
-                ->orderBy('sort_order')
-                ->get();
-
             if ($statuses->isEmpty()) {
                 return 0;
             }

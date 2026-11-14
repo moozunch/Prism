@@ -39,7 +39,7 @@ class MonthlyTicketTrendChart extends ChartWidget
             });
         }
 
-        $earliestTicket = $earliestTicketQuery->orderBy('created_at', 'asc')->first();
+        $earliestTicket = $earliestTicketQuery->min('created_at');
 
         if (!$earliestTicket) {
             return [
@@ -49,7 +49,7 @@ class MonthlyTicketTrendChart extends ChartWidget
         }
 
         // Calculate months from earliest ticket to now
-        $startDate = Carbon::parse($earliestTicket->created_at)->startOfMonth();
+        $startDate = Carbon::parse($earliestTicket)->startOfMonth();
         $endDate = Carbon::now()->endOfMonth();
 
         $months = collect();
@@ -67,8 +67,16 @@ class MonthlyTicketTrendChart extends ChartWidget
         // Query tickets created per month
         $driver = DB::getDriverName();
 
-        $getYear = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM created_at)' : 'YEAR(created_at)';
-        $getMonth = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM created_at)' : 'MONTH(created_at)';
+        $getYear = match ($driver) {
+            'pgsql' => 'EXTRACT(YEAR FROM created_at)',
+            'sqlite' => "CAST(strftime('%Y', created_at) AS INTEGER)",
+            default => 'YEAR(created_at)',
+        };
+        $getMonth = match ($driver) {
+            'pgsql' => 'EXTRACT(MONTH FROM created_at)',
+            'sqlite' => "CAST(strftime('%m', created_at) AS INTEGER)",
+            default => 'MONTH(created_at)',
+        };
 
         $yearKey = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM created_at)' : 'year';
         $monthKey = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM created_at)' : 'month';

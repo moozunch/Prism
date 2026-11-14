@@ -87,9 +87,9 @@ class ProjectTimeline extends Widget
         ];
     }
     
-    public function getTimelineRange()
+    public function getTimelineRange($projects = null)
     {
-        $projects = $this->getProjects();
+        $projects ??= $this->getProjects();
         
         if ($projects->isEmpty()) {
             $startDate = Carbon::now()->startOfMonth();
@@ -138,7 +138,7 @@ class ProjectTimeline extends Widget
         $projects = $this->getProjects();
         $today = Carbon::today();
         $counts = $this->getTotalProjects();
-        $timelineRange = $this->getTimelineRange();
+        $timelineRange = $this->getTimelineRange($projects);
         
         $timelineData = [];
         

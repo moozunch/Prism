@@ -98,7 +98,7 @@ class Reporting extends Page implements HasTable
 
     protected function getReportQuery(): Builder
     {
-        $query = Ticket::query()->with(['project', 'status', 'assignees', 'priority']);
+        $query = Ticket::query()->with(['project' => fn ($query) => $query->withProgressCounts(), 'status', 'assignees', 'priority']);
 
         if (!auth()->user()->hasRole(['admin', 'super_admin'])) {
             $query->whereHas('project.members', function (Builder $query): void {
