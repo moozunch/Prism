@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tickets\Pages;
 
 use App\Filament\Resources\Tickets\TicketResource;
+use App\Jobs\SyncGoogleCalendarTask;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
@@ -33,19 +34,14 @@ class CreateTicket extends CreateRecord
                 : Ticket::query()
                     ->where('id', $copyFromId)
                     ->where(function ($query) use ($userId) {
-                        $query->whereHas(
-                            'assignees',
-                            function ($query) use ($userId) {
+                        $query
+                            ->whereHas('assignees', function ($query) use ($userId) {
                                 $query->where('users.id', $userId);
-                            }
-                        )
-                        ->orWhere('created_by', $userId)
-                        ->orWhereHas(
-                            'project.members',
-                            function ($query) use ($userId) {
+                            })
+                            ->orWhere('created_by', $userId)
+                            ->orWhereHas('project.members', function ($query) use ($userId) {
                                 $query->where('users.id', $userId);
-                            }
-                        );
+                            });
                     })
                     ->first();
 
@@ -60,7 +56,8 @@ class CreateTicket extends CreateRecord
                     $data['created_by']
                 );
 
-                $data['assignees'] = $ticket->assignees()
+                $data['assignees'] = $ticket
+                    ->assignees()
                     ->pluck('users.id')
                     ->toArray();
 
@@ -99,15 +96,16 @@ class CreateTicket extends CreateRecord
             ]);
         }
 
-        $assigneeIds = array_values(array_unique(
-            array_map('intval', $assignees)
-        ));
+        $assigneeIds = array_values(
+            array_unique(array_map('intval', $assignees))
+        );
 
         if (empty($assigneeIds)) {
             return;
         }
 
-        $validIds = $project->members()
+        $validIds = $project
+            ->members()
             ->whereIn('users.id', $assigneeIds)
             ->pluck('users.id')
             ->map(fn ($id): int => (int) $id)
@@ -127,34 +125,38 @@ class CreateTicket extends CreateRecord
     {
         $ticket = $this->record;
 
+        if (!$ticket->assignees()->exists()) {
+            $project = Project::find($ticket->project_id);
+            $userId = Auth::id();
 
-        if ($ticket->assignees()->exists()) {
-            return;
+            if ($userId) {
+                $currentUserIsMember = $project?->members()
+                    ->where('users.id', $userId)
+                    ->exists();
+
+                if ($currentUserIsMember) {
+                    $ticket->assignees()
+                        ->syncWithoutDetaching([$userId]);
+
+                    Notification::make()
+                        ->info()
+                        ->title('Auto-assigned')
+                        ->body(
+                            'No assignees selected. You have been automatically assigned to this task.'
+                        )
+                        ->send();
+                }
+            }
         }
 
-        $project = Project::find($ticket->project_id);
-
-        $userId = Auth::id();
-
-        if (!$userId) {
-            return;
-        }
-
-        $currentUserIsMember = $project?->members()
-            ->where('users.id', $userId)
-            ->exists();
-
-        if ($currentUserIsMember) {
-            $ticket->assignees()
-                ->syncWithoutDetaching([$userId]);
-
-            Notification::make()
-                ->info()
-                ->title('Auto-assigned')
-                ->body(
-                    'No assignees selected. You have been automatically assigned to this task.'
-                )
-                ->send();
+        if (
+            config('services.google.calendar.enabled')
+            && config('services.google.calendar.auto_sync_enabled')
+            && $ticket->due_date !== null
+        ) {
+            SyncGoogleCalendarTask::dispatch(
+                (int) $ticket->id
+            )->afterCommit();
         }
     }
 
@@ -162,7 +164,10 @@ class CreateTicket extends CreateRecord
     {
         $referer = request()->header('referer');
 
-        if ($referer && str_contains($referer, 'project-board-page')) {
+        if (
+            $referer
+            && str_contains($referer, 'project-board-page')
+        ) {
             return '/admin/project-board-page';
         }
 
