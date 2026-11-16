@@ -18,6 +18,9 @@ class GoogleIntegrationController extends Controller
     private const CALENDAR_SCOPE =
         'https://www.googleapis.com/auth/calendar.events';
 
+    private const DRIVE_SCOPE =
+        'https://www.googleapis.com/auth/drive.file';
+
     public function connect(): RedirectResponse
     {
         $user = Auth::user();
@@ -31,23 +34,32 @@ class GoogleIntegrationController extends Controller
         }
 
         abort_unless(
-            config('services.google.client_id') &&
-            config('services.google.client_secret'),
+            config('services.google.client_id')
+                && config('services.google.client_secret'),
             503,
             'Google OAuth is not configured.'
         );
 
-        session()->put('google_integration_user_id', $user->id);
+        session()->put(
+            'google_integration_user_id',
+            $user->id
+        );
 
         /** @var AbstractProvider $googleProvider */
         $googleProvider = Socialite::driver('google');
 
         return $googleProvider
-            ->redirectUrl(route('integrations.google.callback'))
-            ->scopes([self::CALENDAR_SCOPE])
+            ->redirectUrl(
+                route('integrations.google.callback')
+            )
+            ->scopes([
+                self::CALENDAR_SCOPE,
+                self::DRIVE_SCOPE,
+            ])
             ->with([
                 'access_type' => 'offline',
                 'prompt' => 'consent',
+                'include_granted_scopes' => 'true',
             ])
             ->redirect();
     }
@@ -68,8 +80,8 @@ class GoogleIntegrationController extends Controller
             ->pull('google_integration_user_id');
 
         abort_unless(
-            $expectedUserId !== null &&
-            (string) $expectedUserId === (string) $user->id,
+            $expectedUserId !== null
+                && (string) $expectedUserId === (string) $user->id,
             403
         );
 
@@ -85,7 +97,9 @@ class GoogleIntegrationController extends Controller
             $googleProvider = Socialite::driver('google');
 
             $googleUser = $googleProvider
-                ->redirectUrl(route('integrations.google.callback'))
+                ->redirectUrl(
+                    route('integrations.google.callback')
+                )
                 ->user();
 
             if (!$googleUser->getId() || !$googleUser->token) {
@@ -96,20 +110,52 @@ class GoogleIntegrationController extends Controller
 
             $approvedScopes = $googleUser->approvedScopes ?? [];
 
-            if (!in_array(self::CALENDAR_SCOPE, $approvedScopes, true)) {
+            if (!is_array($approvedScopes)) {
+                throw new RuntimeException(
+                    'Invalid Google authorization scopes.'
+                );
+            }
+
+            if (!in_array(
+                self::CALENDAR_SCOPE,
+                $approvedScopes,
+                true
+            )) {
                 throw new RuntimeException(
                     'Calendar permission not granted.'
                 );
             }
 
-            $connection = $user->googleConnection()
+            if (!in_array(
+                self::DRIVE_SCOPE,
+                $approvedScopes,
+                true
+            )) {
+                throw new RuntimeException(
+                    'Google Drive permission not granted.'
+                );
+            }
+
+            $connection = $user
+                ->googleConnection()
                 ->firstOrNew();
 
-            $sameAccount = $connection->exists &&
-                $connection->google_account_id === $googleUser->getId();
+            $sameAccount = $connection->exists
+                && $connection->google_account_id
+                    === $googleUser->getId();
+
+            if ($connection->exists && !$sameAccount) {
+                throw new RuntimeException(
+                    'A different Google account is already connected.'
+                );
+            }
 
             $refreshToken = $googleUser->refreshToken
-                ?: ($sameAccount ? $connection->refresh_token : null);
+                ?: (
+                    $sameAccount
+                        ? $connection->refresh_token
+                        : null
+                );
 
             if (!$refreshToken) {
                 throw new RuntimeException(
@@ -117,14 +163,24 @@ class GoogleIntegrationController extends Controller
                 );
             }
 
-            $connection->google_account_id = $googleUser->getId();
-            $connection->google_email = $googleUser->getEmail();
-            $connection->access_token = $googleUser->token;
-            $connection->refresh_token = $refreshToken;
+            $connection->google_account_id =
+                $googleUser->getId();
 
-            $connection->expires_at = $googleUser->expiresIn
-                ? now()->addSeconds((int) $googleUser->expiresIn)
-                : null;
+            $connection->google_email =
+                $googleUser->getEmail();
+
+            $connection->access_token =
+                $googleUser->token;
+
+            $connection->refresh_token =
+                $refreshToken;
+
+            $connection->expires_at =
+                $googleUser->expiresIn
+                    ? now()->addSeconds(
+                        (int) $googleUser->expiresIn
+                    )
+                    : null;
 
             $connection->scopes = $approvedScopes;
 
@@ -132,18 +188,21 @@ class GoogleIntegrationController extends Controller
 
             return redirect('/admin')->with(
                 'success',
-                'Google Calendar connected successfully.'
+                'Google Calendar and Drive connected successfully.'
             );
 
         } catch (Throwable $exception) {
-            Log::warning('Google integration authorization failed.', [
-                'user_id' => $user->id,
-                'exception_type' => get_class($exception),
-            ]);
+            Log::warning(
+                'Google integration authorization failed.',
+                [
+                    'user_id' => $user->id,
+                    'exception_type' => get_class($exception),
+                ]
+            );
 
             return redirect('/admin')->with(
                 'error',
-                'Unable to connect Google Calendar.'
+                'Unable to connect Google Calendar and Drive.'
             );
         }
     }

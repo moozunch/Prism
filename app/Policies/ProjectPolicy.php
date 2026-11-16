@@ -4,22 +4,32 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User as AuthUser;
 
 class ProjectPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('view_any_project');
     }
 
-    public function view(AuthUser $authUser, Project $project): bool
-    {
-        return $authUser->can('view_project');
+    public function view(
+        AuthUser $authUser,
+        Project $project
+    ): bool {
+        if (!$authUser->can('view_project')) {
+            return false;
+        }
+
+        return $this->canAccessProject(
+            $authUser,
+            $project
+        );
     }
 
     public function create(AuthUser $authUser): bool
@@ -27,23 +37,31 @@ class ProjectPolicy
         return $authUser->can('create_project');
     }
 
-    public function update(AuthUser $authUser, Project $project): bool
-    {
+    public function update(
+        AuthUser $authUser,
+        Project $project
+    ): bool {
         return $authUser->can('update_project');
     }
 
-    public function delete(AuthUser $authUser, Project $project): bool
-    {
+    public function delete(
+        AuthUser $authUser,
+        Project $project
+    ): bool {
         return $authUser->can('delete_project');
     }
 
-    public function restore(AuthUser $authUser, Project $project): bool
-    {
+    public function restore(
+        AuthUser $authUser,
+        Project $project
+    ): bool {
         return $authUser->can('restore_project');
     }
 
-    public function forceDelete(AuthUser $authUser, Project $project): bool
-    {
+    public function forceDelete(
+        AuthUser $authUser,
+        Project $project
+    ): bool {
         return $authUser->can('force_delete_project');
     }
 
@@ -57,8 +75,10 @@ class ProjectPolicy
         return $authUser->can('restore_any_project');
     }
 
-    public function replicate(AuthUser $authUser, Project $project): bool
-    {
+    public function replicate(
+        AuthUser $authUser,
+        Project $project
+    ): bool {
         return $authUser->can('replicate_project');
     }
 
@@ -67,4 +87,28 @@ class ProjectPolicy
         return $authUser->can('reorder_project');
     }
 
+    private function canAccessProject(
+        AuthUser $authUser,
+        Project $project
+    ): bool {
+        if (!$authUser instanceof User) {
+            return false;
+        }
+
+        if (
+            $authUser->hasAnyRole([
+                'admin',
+                'super_admin',
+            ])
+        ) {
+            return true;
+        }
+
+        return $project->members()
+            ->where(
+                'users.id',
+                $authUser->getAuthIdentifier()
+            )
+            ->exists();
+    }
 }
