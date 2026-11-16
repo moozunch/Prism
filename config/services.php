@@ -44,13 +44,26 @@ return [
             ),
 
             'access_token' => env('GOOGLE_ACCESS_TOKEN'),
-            'calendar_id' => env('GOOGLE_CALENDAR_ID', 'primary'),
+
+            'calendar_id' => env(
+                'GOOGLE_CALENDAR_ID',
+                'primary'
+            ),
         ],
 
         'drive' => [
             'enabled' => (bool) env(
                 'GOOGLE_DRIVE_ENABLED',
                 false
+            ),
+
+            'organizer_user_id' => (int) env(
+                'GOOGLE_DRIVE_ORGANIZER_USER_ID',
+                env('GOOGLE_CALENDAR_ORGANIZER_USER_ID', 0)
+            ),
+
+            'root_folder_id' => env(
+                'GOOGLE_DRIVE_ROOT_FOLDER_ID'
             ),
 
             'access_token' => env('GOOGLE_ACCESS_TOKEN'),
