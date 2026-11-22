@@ -9,6 +9,8 @@ class Division extends Model
 {
     use HasFactory;
 
+    protected $attributes = ['is_active' => true];
+
     protected $fillable = [
         'name',
         'description',

@@ -6,12 +6,22 @@ namespace App\Policies;
 
 use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Division;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class DivisionPolicy
 {
     use HandlesAuthorization;
     
+    public function before(AuthUser $authUser): ?bool
+    {
+        if ($authUser instanceof User && $authUser->hasAnyRole(['admin', 'super_admin'])) {
+            return true;
+        }
+
+        return null;
+    }
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('view_any_division');

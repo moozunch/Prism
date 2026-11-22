@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class NotificationPolicy
@@ -19,7 +20,8 @@ class NotificationPolicy
 
     public function view(AuthUser $authUser, Notification $notification): bool
     {
-        return $authUser->can('view_notification');
+        return $authUser->can('view_notification')
+            && $this->canAccessNotification($authUser, $notification);
     }
 
     public function create(AuthUser $authUser): bool
@@ -29,12 +31,14 @@ class NotificationPolicy
 
     public function update(AuthUser $authUser, Notification $notification): bool
     {
-        return $authUser->can('update_notification');
+        return $authUser->can('update_notification')
+            && $this->canAccessNotification($authUser, $notification);
     }
 
     public function delete(AuthUser $authUser, Notification $notification): bool
     {
-        return $authUser->can('delete_notification');
+        return $authUser->can('delete_notification')
+            && $this->canAccessNotification($authUser, $notification);
     }
 
     public function restore(AuthUser $authUser, Notification $notification): bool
@@ -67,4 +71,9 @@ class NotificationPolicy
         return $authUser->can('reorder_notification');
     }
 
+    private function canAccessNotification(AuthUser $authUser, Notification $notification): bool
+    {
+        return $notification->user_id === $authUser->getAuthIdentifier()
+            || ($authUser instanceof User && $authUser->hasRole('super_admin'));
+    }
 }
