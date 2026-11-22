@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\TicketComment;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TicketCommentPolicy
@@ -19,7 +20,8 @@ class TicketCommentPolicy
 
     public function view(AuthUser $authUser, TicketComment $ticketComment): bool
     {
-        return $authUser->can('view_ticket::comment');
+        return $authUser->can('view_ticket::comment')
+            && $this->canAccessComment($authUser, $ticketComment);
     }
 
     public function create(AuthUser $authUser): bool
@@ -29,12 +31,14 @@ class TicketCommentPolicy
 
     public function update(AuthUser $authUser, TicketComment $ticketComment): bool
     {
-        return $authUser->can('update_ticket::comment');
+        return $authUser->can('update_ticket::comment')
+            && $this->canAccessComment($authUser, $ticketComment);
     }
 
     public function delete(AuthUser $authUser, TicketComment $ticketComment): bool
     {
-        return $authUser->can('delete_ticket::comment');
+        return $authUser->can('delete_ticket::comment')
+            && $this->canAccessComment($authUser, $ticketComment);
     }
 
     public function restore(AuthUser $authUser, TicketComment $ticketComment): bool
@@ -67,4 +71,19 @@ class TicketCommentPolicy
         return $authUser->can('reorder_ticket::comment');
     }
 
+    private function canAccessComment(AuthUser $authUser, TicketComment $comment): bool
+    {
+        if ($authUser instanceof User && $authUser->hasRole('super_admin')) {
+            return true;
+        }
+
+        $ticket = $comment->ticket;
+        $userId = $authUser->getAuthIdentifier();
+
+        return $ticket && (
+            $ticket->created_by === $userId
+            || $ticket->assignees()->whereKey($userId)->exists()
+            || $ticket->project?->members()->whereKey($userId)->exists()
+        );
+    }
 }

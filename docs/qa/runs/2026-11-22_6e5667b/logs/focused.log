@@ -1,0 +1,31 @@
+UTC 2026-11-22T12:30:23Z
+SHA e90ba68f36ef51dfb2932d87180d2334d4a4b272
+
+   PASS  Tests\Feature\AttachmentTest
+  ✓ it creates and polymorphically links an attachment to a project      0.33s
+  ✓ it links an attachment to a ticket and authorizes its uploader       0.02s
+
+   PASS  Tests\Feature\DivisionManagementTest
+  ✓ it creates and updates a division                                    0.02s
+  ✓ it allows admin and super admin users to manage divisions with ('ad… 0.12s
+  ✓ it allows admin and super admin users to manage divisions with ('su… 0.06s
+  ✓ it denies members from managing divisions                            0.02s
+
+   PASS  Tests\Feature\OrganizationInformationTest
+  ✓ it creates and updates the deployment organization profile           0.02s
+  ✓ it allows admin and super admin users to access organization inform… 0.01s
+  ✓ it allows admin and super admin users to access organization inform… 0.01s
+  ✓ it denies organization information access to members                 0.03s
+
+   PASS  Tests\Feature\PolicyOwnershipTest
+  ✓ it does not let a user update a ticket outside their projects even…  0.02s
+  ✓ it lets a project member update a ticket in their own project        0.02s
+  ✓ it does not let a user view a ticket comment outside their projects  0.02s
+  ✓ it does not let a user view a project they are not a member of       0.02s
+  ✓ it does not let a user view another user's notification              0.02s
+
+  Tests:    15 passed (29 assertions)
+  Duration: 0.79s
+
+
+EXIT 0

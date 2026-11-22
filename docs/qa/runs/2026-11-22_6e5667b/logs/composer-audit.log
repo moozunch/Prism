@@ -1,0 +1,14 @@
+UTC 2026-11-22T12:27:20Z
+COMMAND composer audit --locked --format=plain
+SHA 6e5667bf18f00430d7487e094832950a78df9468
+
+In CurlDownloader.php line 390:
+
+  curl error 56 while downloading https://packagist.org/api/security-advisori
+  es/: CONNECT tunnel failed, response 403
+
+
+audit [--no-dev] [-f|--format FORMAT] [--locked] [--abandoned ABANDONED] [--ignore-severity IGNORE-SEVERITY]
+
+
+EXIT 100 DURATION_MS 744

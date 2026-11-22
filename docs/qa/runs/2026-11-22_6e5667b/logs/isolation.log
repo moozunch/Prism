@@ -1,0 +1,7 @@
+UTC 2026-11-22T15:37:22Z
+COMMAND scripts/qa/isolation.sh
+SHA 6ac7ab2e9efdfbce07941ceb2daa272162f53e2a
+Deployment a has its own project only.
+Deployment b has its own project only.
+
+EXIT 0 DURATION_MS 1904

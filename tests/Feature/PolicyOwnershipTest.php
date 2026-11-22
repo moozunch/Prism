@@ -81,7 +81,11 @@ it('does not let a user view a ticket comment outside their projects', function 
     ]);
     $comment = TicketComment::find($commentId);
 
-    expect($outsider->can('view', $comment))->toBeFalse();
+    givePermission($author, 'view_ticket::comment');
+    $otherProject->members()->attach($author);
+
+    expect($outsider->can('view', $comment))->toBeFalse()
+        ->and($author->can('view', $comment))->toBeTrue();
 });
 
 it('does not let a user view a project they are not a member of', function () {

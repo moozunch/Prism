@@ -1,0 +1,162 @@
+2026-11-22T15:37:59Z
+3be0ff59f773c0a8c8ea0e8958f72e1c8b13e430
+#0 building with "default" instance using docker driver
+
+#1 [internal] load remote build context
+#1 DONE 0.1s
+
+#1 [internal] load remote build context
+#1 DONE 0.1s
+
+#2 copy /context /
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/php:8.4-fpm
+#3 DONE 0.0s
+
+#4 [internal] load metadata for docker.io/library/composer:latest
+#4 DONE 0.6s
+
+#5 FROM docker.io/library/composer:latest@sha256:50ea4d33fdcde1adb0f045547295faa1548b33872e5f789dae5b02ce2fb5de93
+#5 DONE 0.0s
+
+#6 [stage-0 1/7] FROM docker.io/library/php:8.4-fpm
+#6 DONE 0.0s
+
+#7 [stage-0 3/7] RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+#7 CACHED
+
+#8 [stage-0 4/7] RUN docker-php-ext-install -j2 pdo_mysql mbstring exif pcntl bcmath gd intl zip opcache
+#8 CACHED
+
+#9 [stage-0 5/7] COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+#9 CACHED
+
+#10 [stage-0 2/7] RUN apt-get update && apt-get install -y     libpng-dev     libonig-dev     libxml2-dev     libicu-dev     libzip-dev     zip     unzip     git     curl
+#10 CACHED
+
+#11 [stage-0 6/7] WORKDIR /var/www
+#11 CACHED
+
+#12 [stage-0 7/7] COPY --chown=www-data:www-data . /var/www
+#12 DONE 5.4s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.3s done
+#13 writing image sha256:982e686429316868d0f90e40a988322c14a9358e2000eced8570bc2b6f0c115c done
+#13 naming to docker.io/library/prism-qa:3be0ff5 done
+#13 DONE 0.3s
+[22-Nov-2026 15:38:27] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+Checking platform requirements for packages in the vendor dir
+composer-plugin-api  2.11.0     success
+composer-runtime-api 2.2.2      success
+ext-ctype            *          success provided by symfony/polyfill-ctype
+ext-date             8.4.28     success
+ext-dom              20031129   success
+ext-fileinfo         8.4.28     success
+ext-filter           8.4.28     success
+ext-hash             8.4.28     success
+ext-iconv            8.4.28     success
+ext-intl             8.4.28     success
+ext-json             8.4.28     success
+ext-libxml           8.4.28     success
+ext-mbstring         *          success provided by symfony/polyfill-mbstring
+ext-openssl          8.4.28     success
+ext-pcre             8.4.28     success
+ext-phar             8.4.28     success
+ext-reflection       8.4.28     success
+ext-session          8.4.28     success
+ext-simplexml        8.4.28     success
+ext-tokenizer        8.4.28     success
+ext-xml              8.4.28     success
+ext-xmlreader        8.4.28     success
+ext-xmlwriter        8.4.28     success
+ext-zip              1.22.8     success
+php                  8.4.28     success
+8.0.46
+{
+    "project_progress_20_rows": {
+        "ms": 1.946,
+        "queries": 1,
+        "db_ms": 1.27
+    },
+    "reporting_25_rows": {
+        "ms": 3.59,
+        "queries": 4,
+        "db_ms": 1.45
+    },
+    "dashboard_project_timeline": {
+        "ms": 43.21,
+        "queries": 6,
+        "db_ms": 7.08
+    },
+    "board_assignee_options": {
+        "ms": 0.63,
+        "queries": 1,
+        "db_ms": 0.42
+    },
+    "task_timeline_data": {
+        "ms": 3.429,
+        "queries": 3,
+        "db_ms": 1.23
+    },
+    "peak_memory_bytes": 55050240
+}
+
+   INFO  Nothing to migrate.
+
+
+  Migration name .............................................. Batch / Status
+  0001_01_01_000000_create_users_table ............................... [1] Ran
+  0001_01_01_000001_create_cache_table ............................... [1] Ran
+  0001_01_01_000002_create_jobs_table ................................ [1] Ran
+  2025_03_02_200055_create_projects_table ............................ [1] Ran
+  2025_03_02_200109_create_project_members_table ..................... [1] Ran
+  2025_03_02_200213_create_ticket_statuses_table ..................... [1] Ran
+  2025_03_02_200246_create_tickets_table ............................. [1] Ran
+  2025_03_13_154334_add_uuid_to_ticket_table ......................... [1] Ran
+  2025_03_13_223706_create_permission_tables ......................... [1] Ran
+  2025_03_28_144500_create_ticket_histories_table .................... [1] Ran
+  2025_04_11_173545_create_ticket_comments_table ..................... [1] Ran
+  2025_05_06_220233_add_sort_order_to_ticket_statuses_table .......... [1] Ran
+  2025_05_06_221002_add_sort_color_to_ticket_statuses_table .......... [1] Ran
+  2025_05_10_202453_add_start_date_end_date_to_project ............... [1] Ran
+  2025_06_24_212547_add_ticket_users_table_and_created_by_column ..... [1] Ran
+  2025_06_24_212750_migrate_existing_user_id_data .................... [1] Ran
+  2025_06_24_212838_drop_user_id_column_from_tickets ................. [1] Ran
+  2025_06_29_052227_change_tickets_description_to_longtext ........... [1] Ran
+  2025_07_04_164429_create_ticket_priorities_table ................... [1] Ran
+  2025_07_04_164558_add_priority_id_to_tickets_table ................. [1] Ran
+  2025_07_16_182905_add_pinned_to_projects_table ..................... [1] Ran
+  2025_07_30_211411_create_project_notes_table ....................... [1] Ran
+  2025_08_08_051806_create_notifications_table ....................... [1] Ran
+  2025_08_17_041650_add_start_date_to_tickets_table .................. [1] Ran
+  2025_08_17_041901_populate_start_date_from_created_at_in_tickets_table  [1] Ran
+  2025_08_23_214007_add_is_completed_to_ticket_statuses_table ........ [1] Ran
+  2025_08_25_174118_add_google_id_to_users_table ..................... [1] Ran
+  2025_09_16_051002_add_performance_indexes .......................... [1] Ran
+  2025_11_04_181918_add_color_to_projects_table ...................... [1] Ran
+  2025_11_06_052000_create_settings_table ............................ [1] Ran
+  2025_11_08_063526_add_user_id_to_settings_table .................... [1] Ran
+  2026_09_23_000000_create_organizations_table ....................... [1] Ran
+  2026_09_23_000001_create_divisions_table ........................... [1] Ran
+  2026_09_23_000002_add_division_id_to_users_table ................... [1] Ran
+  2026_09_23_000003_add_status_to_projects_table ..................... [1] Ran
+  2026_09_23_000004_add_role_to_project_members_table ................ [1] Ran
+  2026_09_25_000005_create_attachments_table ......................... [1] Ran
+  2026_11_13_190705_create_google_connections_table .................. [1] Ran
+  2026_11_13_210130_add_calendar_email_to_users_table ................ [1] Ran
+  2026_11_13_213148_create_google_calendar_events_table .............. [1] Ran
+  2026_11_16_105738_add_google_drive_fields_to_attachments_table ..... [1] Ran
+
+
+   INFO  Seeding database.
+
+Disposable Filament admin can access panel.
+/ 200
+/admin 200
+/admin/login 200
+Compiled theme 200
+
+EXIT 0

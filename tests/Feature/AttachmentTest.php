@@ -37,9 +37,15 @@ it('links an attachment to a ticket and authorizes its uploader', function () {
         'name' => 'Attachment Project',
         'ticket_prefix' => 'ATT',
     ]);
+    $status = $project->ticketStatuses()->create([
+        'name' => 'To Do',
+        'color' => '#000000',
+        'sort_order' => 0,
+    ]);
     $ticket = Ticket::create([
         'project_id' => $project->id,
         'name' => 'Attachment Task',
+        'ticket_status_id' => $status->id,
     ]);
     $attachment = $ticket->attachments()->create([
         'file_path' => 'uploads/task-file.txt',

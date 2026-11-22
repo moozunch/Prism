@@ -1,0 +1,86 @@
+UTC 2026-11-22T12:27:19Z
+COMMAND bash -c cat\ /etc/os-release\ \&\&\ php\ --version\ \&\&\ php\ -m\ \&\&\ composer\ --version\ \&\&\ node\ --version\ \&\&\ npm\ --version\ \&\&\ php\ artisan\ --version\ \&\&\ composer\ show\ filament/filament\ --no-ansi\ \|\ sed\ -n\ \"1\,6p\"
+SHA 6e5667bf18f00430d7487e094832950a78df9468
+PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+NAME="Debian GNU/Linux"
+VERSION_ID="13"
+VERSION="13 (trixie)"
+VERSION_CODENAME=trixie
+DEBIAN_VERSION_FULL=13.7
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+PHP 8.4.28 (cli) (built: Nov 18 2026 10:55:31) (NTS)
+Copyright (c) The PHP Group
+Built by Debian
+Zend Engine v4.4.28, Copyright (c) Zend Technologies
+    with Zend OPcache v8.4.28, Copyright (c), by Zend Technologies
+[PHP Modules]
+bcmath
+calendar
+Core
+ctype
+curl
+date
+dom
+exif
+FFI
+fileinfo
+filter
+ftp
+gd
+gettext
+hash
+iconv
+intl
+json
+libxml
+mbstring
+openssl
+pcntl
+pcre
+PDO
+pdo_sqlite
+Phar
+posix
+random
+readline
+Reflection
+session
+shmop
+SimpleXML
+sockets
+sodium
+SPL
+sqlite3
+standard
+sysvmsg
+sysvsem
+sysvshm
+tokenizer
+xml
+xmlreader
+xmlwriter
+xsl
+Zend OPcache
+zip
+zlib
+
+[Zend Modules]
+Zend OPcache
+
+Composer version 2.8.8 2025-04-04 16:56:46
+PHP version 8.4.28 (/workspace/.prism-tools/root/usr/bin/php8.4)
+Run the "diagnose" command to get more detailed diagnostics output.
+v24.22.3
+11.19.1
+Laravel Framework 12.69.2
+name     : filament/filament
+descrip. : A collection of full-stack components for accelerated Laravel app development.
+keywords :
+versions : * v4.13.4
+released : 2026-09-20, 2 months ago
+type     : library
+
+EXIT 0 DURATION_MS 615

@@ -1,0 +1,24 @@
+UTC 2026-11-22T12:27:17Z
+COMMAND npm run build
+SHA 6e5667bf18f00430d7487e094832950a78df9468
+
+> build
+> vite build
+
+vite v6.3.5 building for production...
+transforming...
+✓ 54 modules transformed.
+rendering chunks...
+computing gzip size...
+public/build/manifest.json                0.44 kB │ gzip:  0.19 kB
+public/build/assets/app-Cq7jNU5P.css     68.35 kB │ gzip: 11.24 kB
+public/build/assets/theme-BLIz_78a.css  645.97 kB │ gzip: 67.86 kB
+public/build/assets/app-T1DpEqax.js      35.28 kB │ gzip: 14.16 kB
+✓ built in 1.35s
+npm notice
+npm notice New major version of npm available! 11.19.1 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice
+
+EXIT 0 DURATION_MS 1988

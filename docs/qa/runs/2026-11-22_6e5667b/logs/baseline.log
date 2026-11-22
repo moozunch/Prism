@@ -1,0 +1,231 @@
+UTC 2026-11-22T12:27:12Z
+COMMAND env APP_ENV=testing DB_CONNECTION=sqlite DB_DATABASE=:memory: CACHE_STORE=array SESSION_DRIVER=array MAIL_MAILER=array QUEUE_CONNECTION=sync php vendor/bin/pest --colors=never --log-junit /workspace/scratch/prism-qa/baseline.xml
+SHA 6e5667bf18f00430d7487e094832950a78df9468
+
+   PASS  Tests\Unit\ExampleTest
+  ✓ that true is true                                                    0.01s
+
+   FAIL  Tests\Feature\AttachmentTest
+  ✓ it creates and polymorphically links an attachment to a project      0.49s
+  ⨯ it links an attachment to a ticket and authorizes its uploader       0.03s
+
+   PASS  Tests\Feature\DashboardNotificationTest
+  ✓ it does not grant organization-wide dashboard metrics to a member    0.03s
+  ✓ it grants organization-wide dashboard metrics only to organization…  0.02s
+  ✓ it notifies project participants about comments using task terminol… 0.02s
+
+   FAIL  Tests\Feature\DivisionManagementTest
+  ⨯ it creates and updates a division                                    0.02s
+  ⨯ it allows admin and super admin users to manage divisions with ('ad… 0.02s
+  ⨯ it allows admin and super admin users to manage divisions with ('su… 0.02s
+  ✓ it denies members from managing divisions                            0.02s
+
+   PASS  Tests\Feature\ExampleTest
+  ✓ it returns a successful response                                     0.04s
+
+   PASS  Tests\Feature\GoogleCalendarAutoSyncTest
+  ✓ testing environment is isolated                                      0.02s
+  ✓ auto sync does not run when disabled                                 0.01s
+  ✓ auto sync skips missing task                                         0.01s
+  ✓ auto sync creates event for assignee                                 0.04s
+  ✓ auto sync updates existing event without duplicates                  0.02s
+  ✓ auto sync cancels event when deadline removed                        0.02s
+
+   PASS  Tests\Feature\GoogleIntegrationTest
+  ✓ it isolates Google Calendar failures from core task handling         0.02s
+  ✓ it isolates Google Drive failures and returns authorized file refer… 0.03s
+
+   FAIL  Tests\Feature\OrganizationInformationTest
+  ✓ it creates and updates the deployment organization profile           0.02s
+  ⨯ it allows admin and super admin users to access organization inform… 0.02s
+  ⨯ it allows admin and super admin users to access organization inform… 0.02s
+  ✓ it denies organization information access to members                 0.02s
+
+   PASS  Tests\Feature\PerformanceQueriesTest
+  ✓ it batches progress without using a constrained tickets collection…  0.03s
+  ✓ it retains project and reporting visibility while preloading progre… 0.03s
+  ✓ it loads board assignees in one query without users assigned only e… 0.02s
+  ✓ it calculates ordered task progress with one status lookup per time… 0.02s
+  ✓ it keeps member dashboard totals fresh and restricted to their proj… 0.03s
+  ✓ it groups monthly chart values without exposing another members tas… 0.03s
+  ✓ it renders optimized pages and handles timeline Livewire requests f… 0.26s
+
+   FAIL  Tests\Feature\PolicyOwnershipTest
+  ✓ it does not let a user update a ticket outside their projects even…  0.02s
+  ✓ it lets a project member update a ticket in their own project        0.02s
+  ⨯ it does not let a user view a ticket comment outside their projects  0.02s
+  ✓ it does not let a user view a project they are not a member of       0.02s
+  ⨯ it does not let a user view another user's notification              0.02s
+
+   PASS  Tests\Feature\PrismRoleTest
+  ✓ it seeds the PRISM business roles without removing legacy roles      0.02s
+  ✓ it supports assigning PRISM roles and checking them on User          0.02s
+  ✓ it keeps organization admin distinct from the technical super admin… 0.02s
+
+   PASS  Tests\Feature\ProfileManagementTest
+  ✓ it allows a verified regular user to access the native profile page  0.04s
+  ✓ it uses the native profile page without role or division fields      0.01s
+
+   PASS  Tests\Feature\ProjectBoardMembershipTest
+  ✓ it does not load a project the user is not a member of when mountin… 0.03s
+  ✓ it does not select a project the user is not a member of via select… 0.03s
+  ✓ it does load a project the user is a member of                       0.03s
+
+   PASS  Tests\Feature\ProjectStatusTest
+  ✓ it creates a project with a draft status and updates its status      0.04s
+  ✓ it calculates project progress from completed ticket statuses        0.02s
+
+   PASS  Tests\Feature\ProjectTeamTest
+  ✓ it attaches a user to a project with a project responsibility        0.01s
+
+   PASS  Tests\Feature\UserCanAccessPanelTest
+  ✓ it denies panel access to a user with no role even if email is veri… 0.01s
+  ✓ it denies panel access to a user with a role but an unverified emai… 0.01s
+  ✓ it allows panel access to a user with a verified email and a role    0.01s
+
+   PASS  Tests\Feature\UserDivisionTest
+  ✓ it associates a user with a division                                 0.01s
+  ✓ it allows a user to have no division assigned                        0.02s
+  ✓ it clears the user division assignment when the division is deleted  0.01s
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\AttachmentTest > it links an attach…  QueryException
+  SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: tickets.ticket_status_id (Connection: sqlite, Database: :memory:, SQL: insert into "tickets" ("project_id", "name", "uuid", "updated_at", "created_at") values (1, Attachment Task, ATT-Q1BB6H, 2026-11-22 19:27:13, 2026-11-22 19:27:13))
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:584
+    580▕             $this->bindValues($statement, $this->prepareBindings($bindings));
+    581▕
+    582▕             $this->recordsHaveBeenModified();
+    583▕
+  ➜ 584▕             return $statement->execute();
+    585▕         });
+    586▕     }
+    587▕
+    588▕     /**
+
+      +17 vendor frames
+  18  tests/Feature/AttachmentTest.php:40
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\DivisionManagementTest > it creates and updates a d…
+  Failed asserting that null is true.
+
+  at tests/Feature/DivisionManagementTest.php:26
+     22▕         'name' => 'Operations',
+     23▕         'description' => 'Operational teams',
+     24▕     ]);
+     25▕
+  ➜  26▕     expect($division->is_active)->toBeTrue()
+     27▕         ->and($division->fresh()->name)->toBe('Operations');
+     28▕
+     29▕     $division->update([
+     30▕         'name' => 'Operations and Support',
+
+  1   tests/Feature/DivisionManagementTest.php:26
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\DivisionManagementTest > it allows admin and super…
+  Failed asserting that false is true.
+
+  at tests/Feature/DivisionManagementTest.php:43
+     39▕
+     40▕ it('allows admin and super admin users to manage divisions', function (string $role) {
+     41▕     $user = divisionRoleUser($role);
+     42▕
+  ➜  43▕     expect($user->can('viewAny', Division::class))->toBeTrue()
+     44▕         ->and(DivisionResource::canViewAny())->toBeTrue();
+     45▕ })->with(['admin', 'super_admin']);
+     46▕
+     47▕ it('denies members from managing divisions', function () {
+
+  1   tests/Feature/DivisionManagementTest.php:43
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\DivisionManagementTest > it allows admin and super…
+  Failed asserting that false is true.
+
+  at tests/Feature/DivisionManagementTest.php:43
+     39▕
+     40▕ it('allows admin and super admin users to manage divisions', function (string $role) {
+     41▕     $user = divisionRoleUser($role);
+     42▕
+  ➜  43▕     expect($user->can('viewAny', Division::class))->toBeTrue()
+     44▕         ->and(DivisionResource::canViewAny())->toBeTrue();
+     45▕ })->with(['admin', 'super_admin']);
+     46▕
+     47▕ it('denies members from managing divisions', function () {
+
+  1   tests/Feature/DivisionManagementTest.php:43
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\OrganizationInformationTest > it allows admin and s…
+  Failed asserting that false is true.
+
+  at tests/Feature/OrganizationInformationTest.php:52
+     48▕
+     49▕ it('allows admin and super admin users to access organization information', function (string $role) {
+     50▕     organizationRoleUser($role);
+     51▕
+  ➜  52▕     expect(OrganizationInformation::canAccess())->toBeTrue();
+     53▕ })->with(['admin', 'super_admin']);
+     54▕
+     55▕ it('denies organization information access to members', function () {
+     56▕     organizationRoleUser('member');
+
+  1   tests/Feature/OrganizationInformationTest.php:52
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\OrganizationInformationTest > it allows admin and s…
+  Failed asserting that false is true.
+
+  at tests/Feature/OrganizationInformationTest.php:52
+     48▕
+     49▕ it('allows admin and super admin users to access organization information', function (string $role) {
+     50▕     organizationRoleUser($role);
+     51▕
+  ➜  52▕     expect(OrganizationInformation::canAccess())->toBeTrue();
+     53▕ })->with(['admin', 'super_admin']);
+     54▕
+     55▕ it('denies organization information access to members', function () {
+     56▕     organizationRoleUser('member');
+
+  1   tests/Feature/OrganizationInformationTest.php:52
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\PolicyOwnershipTest > it does not let a user view a…
+  Failed asserting that true is false.
+
+  at tests/Feature/PolicyOwnershipTest.php:84
+     80▕         'updated_at' => now(),
+     81▕     ]);
+     82▕     $comment = TicketComment::find($commentId);
+     83▕
+  ➜  84▕     expect($outsider->can('view', $comment))->toBeFalse();
+     85▕ });
+     86▕
+     87▕ it('does not let a user view a project they are not a member of', function () {
+     88▕     $outsider = User::factory()->create();
+
+  1   tests/Feature/PolicyOwnershipTest.php:84
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\PolicyOwnershipTest > it does not let a user view a…
+  Failed asserting that true is false.
+
+  at tests/Feature/PolicyOwnershipTest.php:110
+    106▕         'title' => 'Test',
+    107▕         'message' => 'Test message',
+    108▕     ]);
+    109▕
+  ➜ 110▕     expect($viewer->can('view', $notification))->toBeFalse();
+    111▕     expect($owner->can('view', $notification))->toBeTrue();
+    112▕ });
+    113▕
+
+  1   tests/Feature/PolicyOwnershipTest.php:110
+
+
+  Tests:    8 failed, 44 passed (106 assertions)
+  Duration: 1.96s
+
+
+EXIT 2 DURATION_MS 2101

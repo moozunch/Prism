@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/workspace/Prism/phpunit.xml" tests="52" assertions="106" errors="1" failures="7" skipped="0" time="1.820594">
+    <testsuite name="Unit" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.006157">
+      <testsuite name="Tests\Unit\ExampleTest" file="tests/Unit/ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.006157">
+        <testcase name="that true is true" file="tests/Unit/ExampleTest.php::that true is true" class="Tests\Unit\ExampleTest" classname="Tests.Unit.ExampleTest" assertions="1" time="0.006157"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Feature" tests="51" assertions="105" errors="1" failures="7" skipped="0" time="1.814437">
+      <testsuite name="Tests\Feature\AttachmentTest" file="tests/Feature/AttachmentTest.php" tests="2" assertions="3" errors="1" failures="0" skipped="0" time="0.522914">
+        <testcase name="it creates and polymorphically links an attachment to a project" file="tests/Feature/AttachmentTest.php::it creates and polymorphically links an attachment to a project" class="Tests\Feature\AttachmentTest" classname="Tests.Feature.AttachmentTest" assertions="3" time="0.492927"/>
+        <testcase name="it links an attachment to a ticket and authorizes its uploader" file="tests/Feature/AttachmentTest.php::it links an attachment to a ticket and authorizes its uploader" class="Tests\Feature\AttachmentTest" classname="Tests.Feature.AttachmentTest" assertions="0" time="0.029987">
+          <error type="Illuminate\Database\QueryException">it links an attachment to a ticket and authorizes its uploaderIlluminate\Database\QueryException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: tickets.ticket_status_id (Connection: sqlite, Database: :memory:, SQL: insert into "tickets" ("project_id", "name", "uuid", "updated_at", "created_at") values (1, Attachment Task, ATT-Q1BB6H, 2026-11-22 19:27:13, 2026-11-22 19:27:13))
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:584
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:827
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:794
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:573
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:537
+at vendor/laravel/framework/src/Illuminate/Database/Query/Processors/Processor.php:32
+at vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:4170
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:2237
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1436
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1401
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1240
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1219
+at vendor/laravel/framework/src/Illuminate/Support/helpers.php:393
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1218
+at vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php:23
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:2544
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:2560
+at tests/Feature/AttachmentTest.php:40
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: tickets.ticket_status_id
+
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:584
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:827
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:794
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:573
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:537
+at vendor/laravel/framework/src/Illuminate/Database/Query/Processors/Processor.php:32
+at vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:4170
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:2237
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1436
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1401
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:1240
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1219
+at vendor/laravel/framework/src/Illuminate/Support/helpers.php:393
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:1218
+at vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php:23
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:2544
+at vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:2560
+at tests/Feature/AttachmentTest.php:40</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\DashboardNotificationTest" file="tests/Feature/DashboardNotificationTest.php" tests="3" assertions="4" errors="0" failures="0" skipped="0" time="0.069890">
+        <testcase name="it does not grant organization-wide dashboard metrics to a member" file="tests/Feature/DashboardNotificationTest.php::it does not grant organization-wide dashboard metrics to a member" class="Tests\Feature\DashboardNotificationTest" classname="Tests.Feature.DashboardNotificationTest" assertions="1" time="0.025630"/>
+        <testcase name="it grants organization-wide dashboard metrics only to organization admins" file="tests/Feature/DashboardNotificationTest.php::it grants organization-wide dashboard metrics only to organization admins" class="Tests\Feature\DashboardNotificationTest" classname="Tests.Feature.DashboardNotificationTest" assertions="1" time="0.019592"/>
+        <testcase name="it notifies project participants about comments using task terminology" file="tests/Feature/DashboardNotificationTest.php::it notifies project participants about comments using task terminology" class="Tests\Feature\DashboardNotificationTest" classname="Tests.Feature.DashboardNotificationTest" assertions="2" time="0.024668"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\DivisionManagementTest" file="tests/Feature/DivisionManagementTest.php" tests="4" assertions="5" errors="0" failures="3" skipped="0" time="0.075748">
+        <testcase name="it creates and updates a division" file="tests/Feature/DivisionManagementTest.php::it creates and updates a division" class="Tests\Feature\DivisionManagementTest" classname="Tests.Feature.DivisionManagementTest" assertions="1" time="0.020229">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">it creates and updates a divisionFailed asserting that null is true.
+at tests/Feature/DivisionManagementTest.php:26</failure>
+        </testcase>
+        <testsuite name="it allows admin and super admin users to manage divisions" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.038595">
+          <testcase name="it allows admin and super admin users to manage divisions with data set &quot;('admin')&quot;" file="tests/Feature/DivisionManagementTest.php::it allows admin and super admin users to manage divisions with data set &quot;('admin')&quot;" class="Tests\Feature\DivisionManagementTest" classname="Tests.Feature.DivisionManagementTest" assertions="1" time="0.020580">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">it allows admin and super admin users to manage divisions with data set "('admin')"Failed asserting that false is true.
+at tests/Feature/DivisionManagementTest.php:43</failure>
+          </testcase>
+          <testcase name="it allows admin and super admin users to manage divisions with data set &quot;('super_admin')&quot;" file="tests/Feature/DivisionManagementTest.php::it allows admin and super admin users to manage divisions with data set &quot;('super_admin')&quot;" class="Tests\Feature\DivisionManagementTest" classname="Tests.Feature.DivisionManagementTest" assertions="1" time="0.018015">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">it allows admin and super admin users to manage divisions with data set "('super_admin')"Failed asserting that false is true.
+at tests/Feature/DivisionManagementTest.php:43</failure>
+          </testcase>
+        </testsuite>
+        <testcase name="it denies members from managing divisions" file="tests/Feature/DivisionManagementTest.php::it denies members from managing divisions" class="Tests\Feature\DivisionManagementTest" classname="Tests.Feature.DivisionManagementTest" assertions="2" time="0.016924"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ExampleTest" file="tests/Feature/ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.036341">
+        <testcase name="it returns a successful response" file="tests/Feature/ExampleTest.php::it returns a successful response" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="1" time="0.036341"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\GoogleCalendarAutoSyncTest" file="Google Calendar Auto Sync (Tests\Feature\GoogleCalendarAutoSync)" tests="6" assertions="18" errors="0" failures="0" skipped="0" time="0.135262">
+        <testcase name="Testing environment is isolated" file="Google Calendar Auto Sync (Tests\Feature\GoogleCalendarAutoSync)::Testing environment is isolated" class="Tests\Feature\GoogleCalendarAutoSyncTest" classname="Tests.Feature.GoogleCalendarAutoSyncTest" assertions="4" time="0.018329"/>
+        <testcase name="Auto sync does not run when disabled" file="Google Calendar Auto Sync (Tests\Feature\GoogleCalendarAutoSync)::Auto sync does not run when disabled" class="Tests\Feature\GoogleCalendarAutoSyncTest" classname="Tests.Feature.GoogleCalendarAutoSyncTest" assertions="1" time="0.014308"/>
+        <testcase name="Auto sync skips missing task" file="Google Calendar Auto Sync (Tests\Feature\GoogleCalendarAutoSync)::Auto sync skips missing task" class="Tests\Feature\GoogleCalendarAutoSyncTest" classname="Tests.Feature.GoogleCalendarAutoSyncTest" assertions="2" time="0.014503"/>
+        <testcase name="Auto sync creates event for assignee" file="Google Calendar Auto Sync (Tests\Feature\GoogleCalendarAutoSync)::Auto sync creates event for assignee" class="Tests\Feature\GoogleCalendarAutoSyncTest" classname="Tests.Feature.GoogleCalendarAutoSyncTest" assertions="3" time="0.044335"/>
+        <testcase name="Auto sync updates existing event without duplicates" file="Google Calendar Auto Sync (Tests\Feature\GoogleCalendarAutoSync)::Auto sync updates existing event without duplicates" class="Tests\Feature\GoogleCalendarAutoSyncTest" classname="Tests.Feature.GoogleCalendarAutoSyncTest" assertions="5" time="0.023084"/>
+        <testcase name="Auto sync cancels event when deadline removed" file="Google Calendar Auto Sync (Tests\Feature\GoogleCalendarAutoSync)::Auto sync cancels event when deadline removed" class="Tests\Feature\GoogleCalendarAutoSyncTest" classname="Tests.Feature.GoogleCalendarAutoSyncTest" assertions="3" time="0.020703"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\GoogleIntegrationTest" file="tests/Feature/GoogleIntegrationTest.php" tests="2" assertions="5" errors="0" failures="0" skipped="0" time="0.042611">
+        <testcase name="it isolates Google Calendar failures from core task handling" file="tests/Feature/GoogleIntegrationTest.php::it isolates Google Calendar failures from core task handling" class="Tests\Feature\GoogleIntegrationTest" classname="Tests.Feature.GoogleIntegrationTest" assertions="1" time="0.016695"/>
+        <testcase name="it isolates Google Drive failures and returns authorized file references on success" file="tests/Feature/GoogleIntegrationTest.php::it isolates Google Drive failures and returns authorized file references on success" class="Tests\Feature\GoogleIntegrationTest" classname="Tests.Feature.GoogleIntegrationTest" assertions="4" time="0.025917"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\OrganizationInformationTest" file="tests/Feature/OrganizationInformationTest.php" tests="4" assertions="6" errors="0" failures="2" skipped="0" time="0.070804">
+        <testcase name="it creates and updates the deployment organization profile" file="tests/Feature/OrganizationInformationTest.php::it creates and updates the deployment organization profile" class="Tests\Feature\OrganizationInformationTest" classname="Tests.Feature.OrganizationInformationTest" assertions="3" time="0.020563"/>
+        <testsuite name="it allows admin and super admin users to access organization information" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.034048">
+          <testcase name="it allows admin and super admin users to access organization information with data set &quot;('admin')&quot;" file="tests/Feature/OrganizationInformationTest.php::it allows admin and super admin users to access organization information with data set &quot;('admin')&quot;" class="Tests\Feature\OrganizationInformationTest" classname="Tests.Feature.OrganizationInformationTest" assertions="1" time="0.017377">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">it allows admin and super admin users to access organization information with data set "('admin')"Failed asserting that false is true.
+at tests/Feature/OrganizationInformationTest.php:52</failure>
+          </testcase>
+          <testcase name="it allows admin and super admin users to access organization information with data set &quot;('super_admin')&quot;" file="tests/Feature/OrganizationInformationTest.php::it allows admin and super admin users to access organization information with data set &quot;('super_admin')&quot;" class="Tests\Feature\OrganizationInformationTest" classname="Tests.Feature.OrganizationInformationTest" assertions="1" time="0.016671">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">it allows admin and super admin users to access organization information with data set "('super_admin')"Failed asserting that false is true.
+at tests/Feature/OrganizationInformationTest.php:52</failure>
+          </testcase>
+        </testsuite>
+        <testcase name="it denies organization information access to members" file="tests/Feature/OrganizationInformationTest.php::it denies organization information access to members" class="Tests\Feature\OrganizationInformationTest" classname="Tests.Feature.OrganizationInformationTest" assertions="1" time="0.016193"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\PerformanceQueriesTest" file="tests/Feature/PerformanceQueriesTest.php" tests="7" assertions="29" errors="0" failures="0" skipped="0" time="0.407739">
+        <testcase name="it batches progress without using a constrained tickets collection and refreshes after writes" file="tests/Feature/PerformanceQueriesTest.php::it batches progress without using a constrained tickets collection and refreshes after writes" class="Tests\Feature\PerformanceQueriesTest" classname="Tests.Feature.PerformanceQueriesTest" assertions="6" time="0.028740"/>
+        <testcase name="it retains project and reporting visibility while preloading progress" file="tests/Feature/PerformanceQueriesTest.php::it retains project and reporting visibility while preloading progress" class="Tests\Feature\PerformanceQueriesTest" classname="Tests.Feature.PerformanceQueriesTest" assertions="9" time="0.027791"/>
+        <testcase name="it loads board assignees in one query without users assigned only elsewhere" file="tests/Feature/PerformanceQueriesTest.php::it loads board assignees in one query without users assigned only elsewhere" class="Tests\Feature\PerformanceQueriesTest" classname="Tests.Feature.PerformanceQueriesTest" assertions="2" time="0.019126"/>
+        <testcase name="it calculates ordered task progress with one status lookup per timeline" file="tests/Feature/PerformanceQueriesTest.php::it calculates ordered task progress with one status lookup per timeline" class="Tests\Feature\PerformanceQueriesTest" classname="Tests.Feature.PerformanceQueriesTest" assertions="3" time="0.019336"/>
+        <testcase name="it keeps member dashboard totals fresh and restricted to their projects" file="tests/Feature/PerformanceQueriesTest.php::it keeps member dashboard totals fresh and restricted to their projects" class="Tests\Feature\PerformanceQueriesTest" classname="Tests.Feature.PerformanceQueriesTest" assertions="3" time="0.027477"/>
+        <testcase name="it groups monthly chart values without exposing another members tasks" file="tests/Feature/PerformanceQueriesTest.php::it groups monthly chart values without exposing another members tasks" class="Tests\Feature\PerformanceQueriesTest" classname="Tests.Feature.PerformanceQueriesTest" assertions="1" time="0.029306"/>
+        <testcase name="it renders optimized pages and handles timeline Livewire requests for an authorized user" file="tests/Feature/PerformanceQueriesTest.php::it renders optimized pages and handles timeline Livewire requests for an authorized user" class="Tests\Feature\PerformanceQueriesTest" classname="Tests.Feature.PerformanceQueriesTest" assertions="5" time="0.255963"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\PolicyOwnershipTest" file="tests/Feature/PolicyOwnershipTest.php" tests="5" assertions="5" errors="0" failures="2" skipped="0" time="0.109019">
+        <testcase name="it does not let a user update a ticket outside their projects even with the update_ticket permission" file="tests/Feature/PolicyOwnershipTest.php::it does not let a user update a ticket outside their projects even with the update_ticket permission" class="Tests\Feature\PolicyOwnershipTest" classname="Tests.Feature.PolicyOwnershipTest" assertions="1" time="0.024433"/>
+        <testcase name="it lets a project member update a ticket in their own project" file="tests/Feature/PolicyOwnershipTest.php::it lets a project member update a ticket in their own project" class="Tests\Feature\PolicyOwnershipTest" classname="Tests.Feature.PolicyOwnershipTest" assertions="1" time="0.023337"/>
+        <testcase name="it does not let a user view a ticket comment outside their projects" file="tests/Feature/PolicyOwnershipTest.php::it does not let a user view a ticket comment outside their projects" class="Tests\Feature\PolicyOwnershipTest" classname="Tests.Feature.PolicyOwnershipTest" assertions="1" time="0.022156">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">it does not let a user view a ticket comment outside their projectsFailed asserting that true is false.
+at tests/Feature/PolicyOwnershipTest.php:84</failure>
+        </testcase>
+        <testcase name="it does not let a user view a project they are not a member of" file="tests/Feature/PolicyOwnershipTest.php::it does not let a user view a project they are not a member of" class="Tests\Feature\PolicyOwnershipTest" classname="Tests.Feature.PolicyOwnershipTest" assertions="1" time="0.020408"/>
+        <testcase name="it does not let a user view another user's notification" file="tests/Feature/PolicyOwnershipTest.php::it does not let a user view another user's notification" class="Tests\Feature\PolicyOwnershipTest" classname="Tests.Feature.PolicyOwnershipTest" assertions="1" time="0.018686">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">it does not let a user view another user's notificationFailed asserting that true is false.
+at tests/Feature/PolicyOwnershipTest.php:110</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\PrismRoleTest" file="tests/Feature/PrismRoleTest.php" tests="3" assertions="6" errors="0" failures="0" skipped="0" time="0.055314">
+        <testcase name="it seeds the PRISM business roles without removing legacy roles" file="tests/Feature/PrismRoleTest.php::it seeds the PRISM business roles without removing legacy roles" class="Tests\Feature\PrismRoleTest" classname="Tests.Feature.PrismRoleTest" assertions="1" time="0.018414"/>
+        <testcase name="it supports assigning PRISM roles and checking them on User" file="tests/Feature/PrismRoleTest.php::it supports assigning PRISM roles and checking them on User" class="Tests\Feature\PrismRoleTest" classname="Tests.Feature.PrismRoleTest" assertions="3" time="0.019291"/>
+        <testcase name="it keeps organization admin distinct from the technical super admin role" file="tests/Feature/PrismRoleTest.php::it keeps organization admin distinct from the technical super admin role" class="Tests\Feature\PrismRoleTest" classname="Tests.Feature.PrismRoleTest" assertions="2" time="0.017609"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ProfileManagementTest" file="tests/Feature/ProfileManagementTest.php" tests="2" assertions="5" errors="0" failures="0" skipped="0" time="0.055525">
+        <testcase name="it allows a verified regular user to access the native profile page" file="tests/Feature/ProfileManagementTest.php::it allows a verified regular user to access the native profile page" class="Tests\Feature\ProfileManagementTest" classname="Tests.Feature.ProfileManagementTest" assertions="1" time="0.041809"/>
+        <testcase name="it uses the native profile page without role or division fields" file="tests/Feature/ProfileManagementTest.php::it uses the native profile page without role or division fields" class="Tests\Feature\ProfileManagementTest" classname="Tests.Feature.ProfileManagementTest" assertions="4" time="0.013715"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ProjectBoardMembershipTest" file="tests/Feature/ProjectBoardMembershipTest.php" tests="3" assertions="3" errors="0" failures="0" skipped="0" time="0.092730">
+        <testcase name="it does not load a project the user is not a member of when mounting via the route parameter" file="tests/Feature/ProjectBoardMembershipTest.php::it does not load a project the user is not a member of when mounting via the route parameter" class="Tests\Feature\ProjectBoardMembershipTest" classname="Tests.Feature.ProjectBoardMembershipTest" assertions="1" time="0.033739"/>
+        <testcase name="it does not select a project the user is not a member of via selectProject()" file="tests/Feature/ProjectBoardMembershipTest.php::it does not select a project the user is not a member of via selectProject()" class="Tests\Feature\ProjectBoardMembershipTest" classname="Tests.Feature.ProjectBoardMembershipTest" assertions="1" time="0.031618"/>
+        <testcase name="it does load a project the user is a member of" file="tests/Feature/ProjectBoardMembershipTest.php::it does load a project the user is a member of" class="Tests\Feature\ProjectBoardMembershipTest" classname="Tests.Feature.ProjectBoardMembershipTest" assertions="1" time="0.027373"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ProjectStatusTest" file="tests/Feature/ProjectStatusTest.php" tests="2" assertions="6" errors="0" failures="0" skipped="0" time="0.050498">
+        <testcase name="it creates a project with a draft status and updates its status" file="tests/Feature/ProjectStatusTest.php::it creates a project with a draft status and updates its status" class="Tests\Feature\ProjectStatusTest" classname="Tests.Feature.ProjectStatusTest" assertions="5" time="0.035471"/>
+        <testcase name="it calculates project progress from completed ticket statuses" file="tests/Feature/ProjectStatusTest.php::it calculates project progress from completed ticket statuses" class="Tests\Feature\ProjectStatusTest" classname="Tests.Feature.ProjectStatusTest" assertions="1" time="0.015027"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ProjectTeamTest" file="tests/Feature/ProjectTeamTest.php" tests="1" assertions="2" errors="0" failures="0" skipped="0" time="0.013539">
+        <testcase name="it attaches a user to a project with a project responsibility" file="tests/Feature/ProjectTeamTest.php::it attaches a user to a project with a project responsibility" class="Tests\Feature\ProjectTeamTest" classname="Tests.Feature.ProjectTeamTest" assertions="2" time="0.013539"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\UserCanAccessPanelTest" file="tests/Feature/UserCanAccessPanelTest.php" tests="3" assertions="3" errors="0" failures="0" skipped="0" time="0.035883">
+        <testcase name="it denies panel access to a user with no role even if email is verified" file="tests/Feature/UserCanAccessPanelTest.php::it denies panel access to a user with no role even if email is verified" class="Tests\Feature\UserCanAccessPanelTest" classname="Tests.Feature.UserCanAccessPanelTest" assertions="1" time="0.012074"/>
+        <testcase name="it denies panel access to a user with a role but an unverified email" file="tests/Feature/UserCanAccessPanelTest.php::it denies panel access to a user with a role but an unverified email" class="Tests\Feature\UserCanAccessPanelTest" classname="Tests.Feature.UserCanAccessPanelTest" assertions="1" time="0.012014"/>
+        <testcase name="it allows panel access to a user with a verified email and a role" file="tests/Feature/UserCanAccessPanelTest.php::it allows panel access to a user with a verified email and a role" class="Tests\Feature\UserCanAccessPanelTest" classname="Tests.Feature.UserCanAccessPanelTest" assertions="1" time="0.011795"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\UserDivisionTest" file="tests/Feature/UserDivisionTest.php" tests="3" assertions="4" errors="0" failures="0" skipped="0" time="0.040620">
+        <testcase name="it associates a user with a division" file="tests/Feature/UserDivisionTest.php::it associates a user with a division" class="Tests\Feature\UserDivisionTest" classname="Tests.Feature.UserDivisionTest" assertions="2" time="0.012976"/>
+        <testcase name="it allows a user to have no division assigned" file="tests/Feature/UserDivisionTest.php::it allows a user to have no division assigned" class="Tests\Feature\UserDivisionTest" classname="Tests.Feature.UserDivisionTest" assertions="1" time="0.015388"/>
+        <testcase name="it clears the user division assignment when the division is deleted" file="tests/Feature/UserDivisionTest.php::it clears the user division assignment when the division is deleted" class="Tests\Feature\UserDivisionTest" classname="Tests.Feature.UserDivisionTest" assertions="1" time="0.012256"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,309 @@
+[
+  {
+    "tc": "TC-24",
+    "name": "NATIVE_SMOKE",
+    "role": "guest",
+    "expected": "Homepage and compiled login theme return HTTP 200",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Homepage and compiled login theme return HTTP 200",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED",
+      "tailwind is not defined"
+    ],
+    "screenshot": "screenshots/TC-24_NATIVE_SMOKE_PASS.png",
+    "capturedAt": "2026-11-22T15:37:13.186Z"
+  },
+  {
+    "tc": "TC-02",
+    "name": "LOGIN_VALID",
+    "role": "admin",
+    "expected": "Valid login opens the dashboard",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Valid login opens the dashboard",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-02_LOGIN_VALID_PASS.png",
+    "capturedAt": "2026-11-22T15:37:14.670Z"
+  },
+  {
+    "tc": "TC-02",
+    "name": "LOGIN_INVALID",
+    "role": "guest",
+    "expected": "Invalid credentials display an error and keep the user on login",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Invalid credentials display an error and keep the user on login",
+    "errors": [],
+    "screenshot": "screenshots/TC-02_LOGIN_INVALID_PASS.png",
+    "capturedAt": "2026-11-22T15:37:15.509Z"
+  },
+  {
+    "tc": "TC-03",
+    "name": "RESET_REQUEST",
+    "role": "guest",
+    "expected": "Forgot password opens the reset request form",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Forgot password opens the reset request form",
+    "errors": [],
+    "screenshot": "screenshots/TC-03_RESET_REQUEST_PASS.png",
+    "capturedAt": "2026-11-22T15:37:16.083Z"
+  },
+  {
+    "tc": "TC-04",
+    "name": "PROFILE",
+    "role": "member",
+    "expected": "Profile displays the member’s own email",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Profile displays the member’s own email",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-04_PROFILE_PASS.png",
+    "capturedAt": "2026-11-22T15:37:17.464Z"
+  },
+  {
+    "tc": "TC-05",
+    "name": "ORGANIZATION",
+    "role": "admin",
+    "expected": "Admin sees the seeded organization profile",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Admin sees the seeded organization profile",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-05_ORGANIZATION_PASS.png",
+    "capturedAt": "2026-11-22T15:37:18.194Z"
+  },
+  {
+    "tc": "TC-06",
+    "name": "DIVISION_EDIT",
+    "role": "admin",
+    "expected": "Admin saves the edit and sees the new division name",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Admin saves the edit and sees the new division name",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-06_DIVISION_EDIT_PASS.png",
+    "capturedAt": "2026-11-22T15:37:19.768Z"
+  },
+  {
+    "tc": "TC-07",
+    "name": "MEMBERS_LIST",
+    "role": "admin",
+    "expected": "Admin sees member management and the seeded member",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Admin sees member management and the seeded member",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-07_MEMBERS_LIST_PASS.png",
+    "capturedAt": "2026-11-22T15:37:20.610Z"
+  },
+  {
+    "tc": "TC-08",
+    "name": "RBAC_DENIED",
+    "role": "member",
+    "expected": "Member receives HTTP 403 on division management",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Member receives HTTP 403 on division management",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ],
+    "screenshot": "screenshots/TC-08_RBAC_DENIED_PASS.png",
+    "capturedAt": "2026-11-22T15:37:21.296Z"
+  },
+  {
+    "tc": "TC-09",
+    "name": "PROJECTS_MEMBER",
+    "role": "member",
+    "expected": "Member listing includes only their project",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Member listing includes only their project",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-09_PROJECTS_MEMBER_PASS.png",
+    "capturedAt": "2026-11-22T15:37:22.085Z"
+  },
+  {
+    "tc": "TC-10",
+    "name": "TASKS_MEMBER",
+    "role": "member",
+    "expected": "Task listing shows the assigned task and hides the other project’s task",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Task listing shows the assigned task and hides the other project’s task",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-10_TASKS_MEMBER_PASS.png",
+    "capturedAt": "2026-11-22T15:37:22.877Z"
+  },
+  {
+    "tc": "TC-10",
+    "name": "BOARD",
+    "role": "member",
+    "expected": "Project board shows the permitted task in To Do",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Project board shows the permitted task in To Do",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-10_BOARD_PASS.png",
+    "capturedAt": "2026-11-22T15:37:23.704Z"
+  },
+  {
+    "tc": "TC-11",
+    "name": "ASSIGNEE",
+    "role": "member",
+    "expected": "Task detail shows the assigned member",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Task detail shows the assigned member",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-11_ASSIGNEE_PASS.png",
+    "capturedAt": "2026-11-22T15:37:24.559Z"
+  },
+  {
+    "tc": "TC-12",
+    "name": "COMMENT",
+    "role": "member",
+    "expected": "The task detail shows the fixture comment",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "The task detail shows the fixture comment",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-12_COMMENT_PASS.png",
+    "capturedAt": "2026-11-22T15:37:25.449Z"
+  },
+  {
+    "tc": "TC-13",
+    "name": "ATTACHMENT_VIEW",
+    "role": "member",
+    "expected": "The authorized member can open the attachment",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "The authorized member can open the attachment",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-13_ATTACHMENT_VIEW_PASS.png",
+    "capturedAt": "2026-11-22T15:37:26.037Z"
+  },
+  {
+    "tc": "TC-14",
+    "name": "NOTIFICATION_LIST",
+    "role": "member",
+    "expected": "Member sees the notification assigned to their account",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Member sees the notification assigned to their account",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-14_NOTIFICATION_LIST_PASS.png",
+    "capturedAt": "2026-11-22T15:37:26.738Z"
+  },
+  {
+    "tc": "TC-15",
+    "name": "DASHBOARD",
+    "role": "admin",
+    "expected": "Authenticated dashboard renders its heading",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Authenticated dashboard renders its heading",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-15_DASHBOARD_PASS.png",
+    "capturedAt": "2026-11-22T15:37:27.347Z"
+  },
+  {
+    "tc": "TC-16",
+    "name": "REPORTING",
+    "role": "member",
+    "expected": "Report shows the member’s task without the restricted task",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Report shows the member’s task without the restricted task",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-16_REPORTING_PASS.png",
+    "capturedAt": "2026-11-22T15:37:28.065Z"
+  },
+  {
+    "tc": "TC-21",
+    "name": "PROJECT_DENIED",
+    "role": "member",
+    "expected": "Direct access returns 403 or 404 without restricted content",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Direct access returns 403 or 404 without restricted content",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "screenshot": "screenshots/TC-21_PROJECT_DENIED_PASS.png",
+    "capturedAt": "2026-11-22T15:37:28.620Z"
+  },
+  {
+    "tc": "TC-22",
+    "name": "PROJECT_REQUIRED_FIELDS",
+    "role": "admin",
+    "expected": "Empty project form reports required fields and stays on create page",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Empty project form reports required fields and stays on create page",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-22_PROJECT_REQUIRED_FIELDS_PASS.png",
+    "capturedAt": "2026-11-22T15:37:29.742Z"
+  },
+  {
+    "tc": "TC-09",
+    "name": "PROJECT_CREATE",
+    "role": "admin",
+    "expected": "Admin creates a project that appears in the project list",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Admin creates a project that appears in the project list",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-09_PROJECT_CREATE_PASS.png",
+    "capturedAt": "2026-11-22T15:37:31.188Z"
+  },
+  {
+    "tc": "TC-04",
+    "name": "LOGOUT",
+    "role": "member",
+    "expected": "Logout invalidates access to the protected profile",
+    "sha": "6ac7ab2e9efdfbce07941ceb2daa272162f53e2a",
+    "status": "PASS",
+    "actual": "Logout invalidates access to the protected profile",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-04_LOGOUT_PASS.png",
+    "capturedAt": "2026-11-22T15:37:32.109Z"
+  }
+]

@@ -1,0 +1,33 @@
+UTC 2026-11-22T15:37:26Z
+COMMAND env APP_ENV=testing DB_URL= php tools/benchmark.php
+SHA 6ac7ab2e9efdfbce07941ceb2daa272162f53e2a
+{
+    "project_progress_20_rows": {
+        "ms": 0.86,
+        "queries": 1,
+        "db_ms": 0.14
+    },
+    "reporting_25_rows": {
+        "ms": 2.863,
+        "queries": 4,
+        "db_ms": 0.39
+    },
+    "dashboard_project_timeline": {
+        "ms": 53.396,
+        "queries": 6,
+        "db_ms": 3.86
+    },
+    "board_assignee_options": {
+        "ms": 0.219,
+        "queries": 1,
+        "db_ms": 0.08
+    },
+    "task_timeline_data": {
+        "ms": 2.06,
+        "queries": 3,
+        "db_ms": 0.12
+    },
+    "peak_memory_bytes": 57147392
+}
+
+EXIT 0 DURATION_MS 1003
