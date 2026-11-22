@@ -40,12 +40,19 @@ it('creates and updates a division', function () {
 it('allows admin and super admin users to manage divisions', function (string $role) {
     $user = divisionRoleUser($role);
 
+    $this->actingAs($user);
+
     expect($user->can('viewAny', Division::class))->toBeTrue()
         ->and(DivisionResource::canViewAny())->toBeTrue();
+
+    $division = Division::factory()->create();
+    $this->get(DivisionResource::getUrl('edit', ['record' => $division]))->assertOk();
 })->with(['admin', 'super_admin']);
 
 it('denies members from managing divisions', function () {
     $user = divisionRoleUser('member');
+
+    $this->actingAs($user);
 
     expect($user->can('viewAny', Division::class))->toBeFalse()
         ->and(DivisionResource::canViewAny())->toBeFalse();

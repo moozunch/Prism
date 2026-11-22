@@ -47,13 +47,13 @@ it('creates and updates the deployment organization profile', function () {
 });
 
 it('allows admin and super admin users to access organization information', function (string $role) {
-    organizationRoleUser($role);
+    $this->actingAs(organizationRoleUser($role));
 
     expect(OrganizationInformation::canAccess())->toBeTrue();
 })->with(['admin', 'super_admin']);
 
 it('denies organization information access to members', function () {
-    organizationRoleUser('member');
+    $this->actingAs(organizationRoleUser('member'));
 
     expect(OrganizationInformation::canAccess())->toBeFalse();
 });
