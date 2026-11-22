@@ -1,0 +1,75 @@
+name: Prism QA
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: bcmath, curl, dom, gd, intl, mbstring, pdo_sqlite, zip
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies and build assets
+        run: |
+          composer install --prefer-dist --no-interaction --no-progress --no-scripts
+          php artisan package:discover --no-interaction
+          npm ci
+          npm run build
+      - name: Run Pest against in-memory SQLite
+        run: scripts/qa/run.sh "$RUNNER_TEMP/prism-qa"
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prism-pest-results
+          path: ${{ runner.temp }}/prism-qa/
+          if-no-files-found: warn
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: bcmath, curl, dom, gd, intl, mbstring, pdo_sqlite, zip
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install dependencies and Chromium
+        run: |
+          composer install --prefer-dist --no-interaction --no-progress --no-scripts
+          php artisan package:discover --no-interaction
+          npm ci
+          npm run build
+          npm install --prefix "$RUNNER_TEMP/playwright" --no-audit --no-fund playwright@1.65.1
+          "$RUNNER_TEMP/playwright/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Capture isolated browser evidence
+        run: |
+          export PRISM_PLAYWRIGHT_MODULE="$RUNNER_TEMP/playwright/node_modules/playwright"
+          scripts/qa/browser.sh "$RUNNER_TEMP/prism-browser"
+      - name: Upload browser results and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prism-browser-evidence
+          path: ${{ runner.temp }}/prism-browser/
+          if-no-files-found: warn
