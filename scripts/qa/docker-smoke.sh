@@ -46,7 +46,7 @@ MAIL_MAILER=array
 QUEUE_CONNECTION=sync
 PRISM_QA_PASSWORD=$admin_password
 EOF
-docker build -t "$image" .
+git archive --format=tar HEAD | docker build -t "$image" -
 docker network create --internal "$name" >/dev/null
 network_started=true
 docker run -d --name "$name-db" --network "$name" --tmpfs /var/lib/mysql \
@@ -56,6 +56,7 @@ docker run -d --name "$name-app" --network "$name" --env-file "$scratch/app.env"
     "$image" sleep infinity >/dev/null
 app_started=true
 docker cp vendor "$name-app:/var/www/vendor"
+docker exec "$name-app" mkdir -p /var/www/public/build
 docker cp public/build/. "$name-app:/var/www/public/build"
 docker exec "$name-app" php-fpm -t
 docker exec "$name-app" composer check-platform-reqs
@@ -68,6 +69,7 @@ done
 docker exec "$name-db" sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysql --protocol=tcp -u "$MYSQL_USER" "$MYSQL_DATABASE" -Nse "SELECT DATABASE(), COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE()"' |
     grep -Eq '^prism_perf_qa[[:space:]]+0$'
 docker exec "$name-app" php tools/benchmark.php --mysql-test
+docker exec "$name-app" php artisan migrate --force --no-interaction
 docker exec "$name-app" php artisan migrate:status --no-interaction
 docker exec "$name-app" php artisan db:seed --class=RoleSeeder --no-interaction --force
 docker exec "$name-app" php -r '
