@@ -24,7 +24,7 @@ Instalasi dan build aset, migrasi MySQL dalam container, HTTP smoke, queue, dan 
 
 **NO_GO untuk rilis** sampai temuan kritis ditriase dan diperbaiki, audit Composer selesai, dan persetujuan UAT dipenuhi. Uji consent Google secara terpisah bila integrasi akan diaktifkan. Prioritaskan validasi variasi input, matriks peran bisnis, pembaruan profil/mutasi attachment, dan cakupan browser lain yang dicatat. Dokumen pengujian DOCX dan SRS asli tidak disertakan. Pertahankan referensi bagian persyaratan internal dan jangan mengklaim ID FR asli, persentase coverage, atau kepatuhan ISO.
 
-Branch review: `qa/automated-testing-evidence`. [GitHub compare](https://github.com/moozunch/Prism/compare/main...qa/automated-testing-evidence?expand=1)
+Branch review `qa/automated-testing-evidence` sudah terunggah. Draft PR belum terbuka karena GitHub API menolak request dengan HTTP 403. CI GitHub belum dieksekusi pada PR. [Buka PR](https://github.com/moozunch/Prism/pull/new/qa/automated-testing-evidence) · [Draf deskripsi](PR_DRAFT.md)
 
 ## LAMPIRAN BUKTI SCREENSHOT PENGUJIAN
 

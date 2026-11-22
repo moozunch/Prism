@@ -19,3 +19,5 @@ Log memuat perintah atau runner, waktu, SHA jika tersedia, dan exit status. Wakt
 | 13 | `python3 scripts/qa/validate-evidence.py …` | [Hasil validator](logs/evidence-validation.log) |
 
 Percobaan awal browser membantu menyesuaikan locator dengan label Filament dan mengisolasi cookie/fixture. Artefak final berisi assertion yang dijalankan, sementara kegagalan produk sebelum perbaikan dipertahankan terpisah. Pemeriksaan konfigurasi Compose berupa rendering lokal. Compose production, nginx end-to-end, dan akses jaringan publik tidak dijalankan.
+
+Branch QA berhasil didorong ke GitHub. `gh pr create --draft` dan `gh api --method POST repos/moozunch/Prism/pulls` sama-sama ditolak dengan HTTP 403. PR dan CI jarak jauh belum terkonfirmasi. Gunakan draf deskripsi dan tautan yang dikembalikan GitHub untuk membuka PR. [Draf](PR_DRAFT.md) · [Buka PR](https://github.com/moozunch/Prism/pull/new/qa/automated-testing-evidence)
