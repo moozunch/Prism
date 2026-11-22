@@ -1,0 +1,5 @@
+UTC 2026-11-22T15:37:27Z
+COMMAND env DB_PORT=3306 DB_PASSWORD=qa-placeholder DB_USERNAME=prism_qa docker compose config --quiet
+SHA 6ac7ab2e9efdfbce07941ceb2daa272162f53e2a
+
+EXIT 0 DURATION_MS 128

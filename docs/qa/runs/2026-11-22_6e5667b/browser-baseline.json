@@ -1,0 +1,17 @@
+[
+  {
+    "tc": "TC-06",
+    "name": "DIVISION_BASELINE",
+    "role": "admin",
+    "expected": "Seeded admin can edit the fixture division",
+    "sha": "6e5667bf18f00430d7487e094832950a78df9468",
+    "status": "FAIL",
+    "actual": "Expected values to be strictly equal:\n\n403 !== 200\n",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ],
+    "screenshot": "screenshots/TC-06_DIVISION_BASELINE_FAIL.png",
+    "capturedAt": "2026-11-22T12:29:44.352Z"
+  }
+]

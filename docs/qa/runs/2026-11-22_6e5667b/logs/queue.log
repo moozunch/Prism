@@ -1,0 +1,8 @@
+UTC 2026-11-22T15:37:24Z
+COMMAND scripts/qa/queue.sh
+SHA 6ac7ab2e9efdfbce07941ceb2daa272162f53e2a
+  2026-11-22 22:37:25 App\Jobs\SyncGoogleCalendarTask ................ RUNNING
+  2026-11-22 22:37:25 App\Jobs\SyncGoogleCalendarTask ............ 4.42ms DONE
+One job consumed, none pending or failed. Google disabled.
+
+EXIT 0 DURATION_MS 1480

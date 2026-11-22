@@ -1,0 +1,5 @@
+2026-11-22T15:38:14Z
+3be0ff59f773c0a8c8ea0e8958f72e1c8b13e430
+COMMAND php artisan route:list --json; inspect every registered name and URI for registration
+Checked 56 routes, including vendor routes. Registration routes found: 0.
+EXIT 0
