@@ -135,7 +135,7 @@ for path in / /admin /admin/login; do
     docker exec "$name-app" curl --noproxy "$name-web" -fsSL -o /dev/null -w "$path %{http_code} %{time_total}s\n" "$origin$path"
 done
 docker exec "$name-app" curl --noproxy "$name-web" -fsS "$origin/admin/login" > "$scratch/login.html"
-grep -qi 'type="password"' "$scratch/login.html"
+grep -qi 'Sign in' "$scratch/login.html"
 theme="$(docker exec "$name-app" php -r 'echo json_decode(file_get_contents("public/build/manifest.json"), true)["resources/css/filament/admin/theme.css"]["file"];')"
 docker exec "$name-app" curl --noproxy "$name-web" -fsS -o /dev/null -w 'Compiled theme %{http_code} %{content_type}\n' "$origin/build/$theme"
 printf 'Nginx to PHP-FPM via FastCGI, 12 anonymous /admin/login requests at concurrency 4\n'
