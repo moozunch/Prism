@@ -132,3 +132,28 @@ it('rejects a duplicate member email and lets an admin reassign a division', fun
         ->assertHasNoFormErrors();
     expect($member->fresh()->division_id)->toBe($destination->id);
 });
+
+it('downloads browser-active local files while allowing the authorized user to delete the attachment', function () {
+    Illuminate\Support\Facades\Storage::fake('attachments');
+    $disk = Illuminate\Support\Facades\Storage::disk('attachments');
+    $user = User::factory()->create();
+    $user->givePermissionTo(Permission::findOrCreate('view_project', 'web'));
+    $project = Project::factory()->create();
+    $project->members()->attach($user);
+    $disk->put('qa/document.html', '<!doctype html><title>QA download fixture</title>');
+    $attachment = $project->attachments()->create([
+        'file_path' => 'qa/document.html',
+        'file_name' => 'document.html',
+        'original_name' => 'document.html',
+        'mime_type' => 'text/plain',
+        'user_id' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user)->get(route('attachments.view', $attachment));
+    $response->assertOk()->assertHeader('Content-Type', 'application/octet-stream');
+    expect($response->headers->get('Content-Disposition'))->toStartWith('attachment;');
+    expect($user->can('delete', $attachment))->toBeTrue();
+    $attachment->delete();
+    $disk->assertMissing('qa/document.html');
+    $this->get(route('attachments.view', $attachment))->assertNotFound();
+});
