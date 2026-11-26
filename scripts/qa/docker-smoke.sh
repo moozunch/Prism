@@ -85,7 +85,32 @@ docker exec "$name-app" php -r '
     $user->assignRole("admin");
     if (! $user->canAccessPanel(Filament\Facades\Filament::getPanel("admin"))) exit(1);
     echo "Disposable Filament admin can access panel.", PHP_EOL;
+    $member = App\Models\User::factory()->create(["email" => "qa-member-container@example.test"]);
+    $member->assignRole("member");
+    [$visible, $hidden] = App\Models\Project::orderBy("id")->take(2)->get()->all();
+    $visible->members()->attach($member);
+    if (! $member->can("view", $visible) || $member->can("view", $hidden)) exit(1);
+    echo "MySQL project ownership policy verified.", PHP_EOL;
 '
+docker exec -e QUEUE_CONNECTION=database "$name-app" php -r '
+    require "vendor/autoload.php";
+    $app = require "bootstrap/app.php";
+    $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+    Illuminate\Support\Facades\Queue::connection("database")
+        ->push(new App\Jobs\SyncGoogleCalendarTask(0), "", "prism-qa");
+'
+docker exec -e QUEUE_CONNECTION=database "$name-app" php artisan queue:work database --queue=prism-qa --once --tries=1
+queue_count="$(docker exec "$name-db" sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysql --protocol=tcp -u "$MYSQL_USER" "$MYSQL_DATABASE" -Nse "SELECT (SELECT COUNT(*) FROM jobs WHERE queue=\"prism-qa\") + (SELECT COUNT(*) FROM failed_jobs WHERE queue=\"prism-qa\")"')"
+test "$queue_count" = 0
+printf 'MySQL worker consumed one job; no pending or failed QA jobs.\n'
+
+docker exec "$name-db" sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysqldump --protocol=tcp -u "$MYSQL_USER" --single-transaction --no-tablespaces --set-gtid-purged=OFF "$MYSQL_DATABASE"' > "$scratch/backup.sql"
+docker exec "$name-db" sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -u root -e "CREATE DATABASE prism_restore_qa"'
+docker exec -i "$name-db" sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -u root prism_restore_qa' < "$scratch/backup.sql"
+restore_check="$(docker exec "$name-db" sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -u root prism_restore_qa -Nse "SELECT COUNT(*) FROM tickets"')"
+test "$restore_check" = 200
+printf 'Logical restore into disposable MySQL schema verified (%s tasks).\n' "$restore_check"
+
 docker exec "$name-app" chown -R www-data:www-data storage bootstrap/cache
 mkdir -p "$scratch/nginx-root/var/www/public"
 docker cp "$name-app:/var/www/public/." "$scratch/nginx-root/var/www/public"
@@ -110,7 +135,7 @@ for path in / /admin /admin/login; do
     docker exec "$name-app" curl --noproxy "$name-web" -fsSL -o /dev/null -w "$path %{http_code} %{time_total}s\n" "$origin$path"
 done
 docker exec "$name-app" curl --noproxy "$name-web" -fsS "$origin/admin/login" > "$scratch/login.html"
-grep -qi 'Sign in' "$scratch/login.html"
+grep -qi 'type="password"' "$scratch/login.html"
 theme="$(docker exec "$name-app" php -r 'echo json_decode(file_get_contents("public/build/manifest.json"), true)["resources/css/filament/admin/theme.css"]["file"];')"
 docker exec "$name-app" curl --noproxy "$name-web" -fsS -o /dev/null -w 'Compiled theme %{http_code} %{content_type}\n' "$origin/build/$theme"
 printf 'Nginx to PHP-FPM via FastCGI, 12 anonymous /admin/login requests at concurrency 4\n'
