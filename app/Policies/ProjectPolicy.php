@@ -41,14 +41,16 @@ class ProjectPolicy
         AuthUser $authUser,
         Project $project
     ): bool {
-        return $authUser->can('update_project');
+        return $authUser->can('update_project')
+            && $this->canAccessProject($authUser, $project);
     }
 
     public function delete(
         AuthUser $authUser,
         Project $project
     ): bool {
-        return $authUser->can('delete_project');
+        return $authUser->can('delete_project')
+            && $this->canAccessProject($authUser, $project);
     }
 
     public function restore(

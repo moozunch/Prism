@@ -247,15 +247,25 @@ class ProjectBoard extends Page
     }
 
     #[On('ticket-moved')]
-    public function moveTicket($ticketId, $newStatusId): void
+    public function moveTicket(int $ticketId, int $newStatusId): void
     {
         $ticket = Ticket::find($ticketId);
 
         if ($ticket && $ticket->project_id === $this->selectedProject?->id) {
-            if (! $this->canManageTicket($ticket)) {
+            if (! $this->canManageTicket($ticket) || ! auth()->user()->can('update', $ticket)) {
                 Notification::make()
                     ->title('Permission Denied')
                     ->body('You do not have permission to move this task.')
+                    ->danger()
+                    ->send();
+
+                return;
+            }
+
+            if (! $this->selectedProject->ticketStatuses()->whereKey($newStatusId)->exists()) {
+                Notification::make()
+                    ->title('Invalid Task Status')
+                    ->body('Choose a status from the current project.')
                     ->danger()
                     ->send();
 
