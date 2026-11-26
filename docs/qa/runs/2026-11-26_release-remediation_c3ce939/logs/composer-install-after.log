@@ -1,0 +1,40 @@
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Package operations: 0 installs, 1 update, 0 removals
+  - Upgrading laravel/framework (v12.69.2 => v12.71.0): Extracting archive
+Generating optimized autoload files
+114 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+
+   INFO  Discovering packages.
+
+  anourvalar/eloquent-serialize ......................................... DONE
+  bezhansalleh/filament-plugin-essentials ............................... DONE
+  bezhansalleh/filament-shield .......................................... DONE
+  blade-ui-kit/blade-heroicons .......................................... DONE
+  blade-ui-kit/blade-icons .............................................. DONE
+  filament/actions ...................................................... DONE
+  filament/filament ..................................................... DONE
+  filament/forms ........................................................ DONE
+  filament/infolists .................................................... DONE
+  filament/notifications ................................................ DONE
+  filament/query-builder ................................................ DONE
+  filament/schemas ...................................................... DONE
+  filament/support ...................................................... DONE
+  filament/tables ....................................................... DONE
+  filament/upgrade ...................................................... DONE
+  filament/widgets ...................................................... DONE
+  kirschbaum-development/eloquent-power-joins ........................... DONE
+  laravel/octane ........................................................ DONE
+  laravel/pail .......................................................... DONE
+  laravel/sail .......................................................... DONE
+  laravel/socialite ..................................................... DONE
+  laravel/tinker ........................................................ DONE
+  livewire/livewire ..................................................... DONE
+  nesbot/carbon ......................................................... DONE
+  nunomaduro/collision .................................................. DONE
+  nunomaduro/termwind ................................................... DONE
+  pestphp/pest-plugin-laravel ........................................... DONE
+  ryangjchandler/blade-capture-directive ................................ DONE
+  solution-forest/tab-layout-plugin ..................................... DONE
+  spatie/laravel-permission ............................................. DONE

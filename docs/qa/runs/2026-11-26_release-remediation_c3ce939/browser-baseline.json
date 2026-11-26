@@ -1,0 +1,16 @@
+[
+  {
+    "tc": "TC-10",
+    "name": "BOARD_BEFORE",
+    "role": "member",
+    "expected": "Project board shows the permitted task in To Do",
+    "sha": "024bd14192620fe3bef013f4c28d4722e2bda511",
+    "status": "PASS",
+    "actual": "Assigned card shown in To Do on the current baseline.",
+    "errors": [
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "screenshot": "screenshots/TC-10_BOARD_BEFORE_PASS.png",
+    "capturedAt": "2026-11-26T10:20:56.463Z"
+  }
+]

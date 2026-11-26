@@ -1,0 +1,25 @@
+   PASS  Tests\Feature\QaWorkflowTest
+  ✓ it requests a reset link for a verified member without sending real… 0.63s
+  ✓ it uses a valid reset token once and rejects an invalid token        0.31s
+  ✓ it protects local attachment content and distinguishes missing file… 0.07s
+  ✓ it rejects an unmatched OAuth session before calling the provider    0.04s
+  ✓ it persists an approved mocked OAuth connection with hidden encrypt… 0.03s
+  ✓ it rejects invalid Google OAuth state without persisting or exchang… 0.03s
+  ✓ it queues Calendar jobs after commit and delegates only when autosy… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.04s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it accepts multiple project assignees and refuses a non-member       0.24s
+
+   PASS  Tests\Feature\GoogleCalendarAutoSyncTest
+  ✓ testing environment is isolated                                      0.02s
+  ✓ auto sync does not run when disabled                                 0.01s
+  ✓ auto sync skips missing task                                         0.01s
+  ✓ auto sync creates event for assignee                                 0.02s
+  ✓ auto sync updates existing event without duplicates                  0.02s
+  ✓ auto sync cancels event when deadline removed                        0.02s
+
+  Tests:    19 passed (88 assertions)
+  Duration: 1.64s

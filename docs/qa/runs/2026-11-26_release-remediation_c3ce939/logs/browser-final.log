@@ -1,0 +1,23 @@
+TC-24 NATIVE_SMOKE PASS Homepage and compiled login theme return HTTP 200
+TC-02 LOGIN_VALID PASS Valid login opens the dashboard
+TC-02 LOGIN_INVALID PASS Invalid credentials display an error and keep the user on login
+TC-03 RESET_REQUEST PASS Forgot password opens the reset request form
+TC-04 PROFILE PASS Profile displays the member’s own email
+TC-05 ORGANIZATION PASS Admin sees the seeded organization profile
+TC-06 DIVISION_EDIT PASS Admin saves the edit and sees the new division name
+TC-07 MEMBERS_LIST PASS Admin sees member management and the seeded member
+TC-08 RBAC_DENIED PASS Member receives HTTP 403 on division management
+TC-09 PROJECTS_MEMBER PASS Member listing includes only their project
+TC-10 TASKS_MEMBER PASS Task listing shows the assigned task and hides the other project’s task
+TC-10 BOARD PASS Project board shows the permitted task in To Do
+TC-10 BOARD_MOVE PASS Dragging the assigned task to Done persists after reloading
+TC-11 ASSIGNEE PASS Task detail shows the assigned member
+TC-12 COMMENT PASS The task detail shows the fixture comment
+TC-13 ATTACHMENT_VIEW PASS The authorized member can open the attachment
+TC-14 NOTIFICATION_LIST PASS Member sees the notification assigned to their account
+TC-15 DASHBOARD PASS Authenticated dashboard renders its heading
+TC-16 REPORTING PASS Report shows the member’s task without the restricted task
+TC-21 PROJECT_DENIED PASS Direct access returns 403 or 404 without restricted content
+TC-22 PROJECT_REQUIRED_FIELDS PASS Empty project form reports required fields and stays on create page
+TC-09 PROJECT_CREATE PASS Admin creates a project that appears in the project list
+TC-04 LOGOUT PASS Logout invalidates access to the protected profile

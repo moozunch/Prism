@@ -1,0 +1,38 @@
+{
+  "source": "GitHub Advisory Database, reviewed Packagist advisories",
+  "source_commit": "fb93ce73c92f553d66455bf917999fc8a9a64863",
+  "source_commit_time": "2026-11-25T21:35:43Z",
+  "lock_sha256": "3a814b4cc58901a9e80e8fb5c1c18985051476e81662a8a853f59bd1fee929c3",
+  "packages": 174,
+  "affected_records_examined": 354,
+  "findings": [
+    {
+      "advisory": "GHSA-63hm-g96r-2m2q",
+      "package": "laravel/framework",
+      "version": "v12.69.2",
+      "scope": "runtime",
+      "severity": "LOW",
+      "summary": "Laravel: Task Output Injection - Concurrency Process",
+      "matched_entry": {
+        "package": {
+          "ecosystem": "Packagist",
+          "name": "laravel/framework"
+        },
+        "ranges": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "12.71.0"
+              }
+            ]
+          }
+        ]
+      },
+      "url": "https://github.com/advisories/GHSA-63hm-g96r-2m2q"
+    }
+  ]
+}

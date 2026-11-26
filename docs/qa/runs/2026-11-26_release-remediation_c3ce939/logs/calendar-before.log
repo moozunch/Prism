@@ -1,0 +1,39 @@
+   FAIL  Tests\Feature\QaWorkflowTest
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.44s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ⨯ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\QaWorkflowTest > it persists a failed Calendar sync…
+  Failed asserting that a row in the table [google_calendar_events] matches the attributes {
+    "ticket_id": 1,
+    "sync_status": "failed",
+    "google_event_id": null
+}.
+
+Found similar results: [
+    {
+        "ticket_id": 1,
+        "sync_status": "pending",
+        "google_event_id": null
+    }
+].
+
+  at tests/Feature/QaWorkflowTest.php:211
+    207▕         Http::assertSent(fn ($request) => $request->url() === 'https://oauth2.googleapis.com/token');
+    208▕         $this->assertDatabaseEmpty('google_calendar_events');
+    209▕     } else {
+    210▕         expect($requestAttempts)->toBe(1);
+  ➜ 211▕         $this->assertDatabaseHas('google_calendar_events', [
+    212▕             'ticket_id' => $task->id, 'sync_status' => 'failed', 'google_event_id' => null,
+    213▕         ]);
+    214▕     }
+    215▕ })->with([403, 429, 503, 'timeout', 'refresh']);
+
+
+  Tests:    1 failed, 4 passed (21 assertions)
+  Duration: 0.58s
+
+
+EXIT 1

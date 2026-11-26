@@ -2,6 +2,11 @@ name: Prism QA
 
 on:
   pull_request:
+  push:
+    branches:
+      - 'qa/release-readiness-remediation-*'
+    paths-ignore:
+      - 'docs/qa/runs/**'
   workflow_dispatch:
 
 permissions:
@@ -31,6 +36,36 @@ jobs:
           npm run build
       - name: Run Pest against in-memory SQLite
         run: scripts/qa/run.sh "$RUNNER_TEMP/prism-qa"
+      - name: Audit locked dependencies
+        run: |
+          npm_status=0
+          composer_status=0
+          npm audit --json > "$RUNNER_TEMP/prism-qa/npm-audit.json" || npm_status=$?
+          composer audit --locked --format=json > "$RUNNER_TEMP/prism-qa/composer-audit.json" || composer_status=$?
+          if [ "$npm_status" -ne 0 ] || [ "$composer_status" -ne 0 ]; then
+            echo "::error title=Dependency audit::npm exit $npm_status, Composer exit $composer_status"
+            if [ "$npm_status" -ne 0 ]; then
+              jq -r '(.vulnerabilities // {}) | to_entries[] | "::error title=npm audit::\(.key) \(.value.severity)"' \
+                "$RUNNER_TEMP/prism-qa/npm-audit.json"
+            fi
+            if [ "$composer_status" -ne 0 ]; then
+              jq -r '[(.advisories // {}) | to_entries[] | .key as $pkg | .value[] | "\($pkg) \(.advisoryId)"] |
+                if length > 0 then "::error title=Composer advisories::" + join(", ") else empty end' \
+                "$RUNNER_TEMP/prism-qa/composer-audit.json"
+              jq -r '(.abandoned // {}) | keys[] | "::error title=Composer abandoned package::\(.)"' \
+                "$RUNNER_TEMP/prism-qa/composer-audit.json"
+            fi
+          fi
+          {
+            printf '### Dependency audit results\n\n- npm exit %s\n- Composer exit %s\n' "$npm_status" "$composer_status"
+            jq -r '(.metadata.vulnerabilities // {}) | to_entries[] | "- npm \(.key): \(.value)"' \
+              "$RUNNER_TEMP/prism-qa/npm-audit.json"
+            jq -r '(.advisories // {}) | to_entries[] | .key as $pkg | .value[] | "- Composer \($pkg) \(.advisoryId) \(.severity)"' \
+              "$RUNNER_TEMP/prism-qa/composer-audit.json"
+            jq -r '(.abandoned // {}) | keys[] | "- Composer abandoned: \(.)"' \
+              "$RUNNER_TEMP/prism-qa/composer-audit.json"
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "$npm_status" -eq 0 && test "$composer_status" -eq 0
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

@@ -1,0 +1,10 @@
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 0 installs, 4 updates, 0 removals
+  - Upgrading league/csv (9.28.0 => 9.30.0)
+  - Upgrading phpseclib/phpseclib (4.0.1 => 4.0.4)
+  - Upgrading symfony/html-sanitizer (v8.1.7 => v8.1.12)
+  - Upgrading symfony/http-foundation (v7.4.19 => v7.4.24)
+Writing lock file
+114 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!

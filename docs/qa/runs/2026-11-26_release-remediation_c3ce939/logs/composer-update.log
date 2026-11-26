@@ -1,0 +1,7 @@
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 0 installs, 1 update, 0 removals
+  - Upgrading laravel/framework (v12.69.2 => v12.71.0)
+Writing lock file
+114 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!

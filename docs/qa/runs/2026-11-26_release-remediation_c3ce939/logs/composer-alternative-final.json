@@ -1,0 +1,9 @@
+{
+  "source": "GitHub Advisory Database, reviewed Packagist advisories",
+  "source_commit": "fb93ce73c92f553d66455bf917999fc8a9a64863",
+  "source_commit_time": "2026-11-25T21:35:43Z",
+  "lock_sha256": "a2d19af67571e626dd892445c8a97388b3759a0ed19d8b81f60f2fa25caf629e",
+  "packages": 174,
+  "affected_records_examined": 354,
+  "findings": []
+}

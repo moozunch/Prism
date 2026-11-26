@@ -1,0 +1,27 @@
+   FAIL  Tests\Feature\ReleaseReadinessTest
+  ⨯ it downloads browser-active local files while allowing the authoriz… 0.32s
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\ReleaseReadinessTest > it downloads browser-active…
+  Header [Content-Type] was found, but value [text/html; charset=utf-8] does not match [application/octet-stream].
+Failed asserting that two strings are equal.
+  -'application/octet-stream'
+  +'text/html; charset=utf-8'
+
+
+  at tests/Feature/ReleaseReadinessTest.php:153
+    149▕         'user_id' => $user->id,
+    150▕     ]);
+    151▕
+    152▕     $response = $this->actingAs($user)->get(route('attachments.view', $attachment));
+  ➜ 153▕     $response->assertOk()->assertHeader('Content-Type', 'application/octet-stream');
+    154▕     expect($response->headers->get('Content-Disposition'))->toStartWith('attachment;');
+    155▕     expect($user->can('delete', $attachment))->toBeTrue();
+    156▕     $attachment->delete();
+    157▕     $disk->assertMissing('qa/document.html');
+
+
+  Tests:    1 failed (3 assertions)
+  Duration: 0.37s
+
+
+EXIT 1

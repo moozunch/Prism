@@ -1,0 +1,33 @@
+   PASS  Tests\Feature\ReleaseReadinessTest
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.30s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it rejects direct project edit outside the project manager membersh… 0.64s
+  ✓ it moves an assigned task only to statuses of its own project        0.09s
+  ✓ it filters report deadlines without including tasks from a hidden p… 0.11s
+  ✓ it rejects a duplicate member email and lets an admin reassign a di… 0.13s
+  ✓ it downloads browser-active local files while allowing the authoriz… 0.04s
+
+   PASS  Tests\Feature\QaWorkflowTest
+  ✓ it requests a reset link for a verified member without sending real… 0.25s
+  ✓ it uses a valid reset token once and rejects an invalid token        0.26s
+  ✓ it protects local attachment content and distinguishes missing file… 0.03s
+  ✓ it rejects an unmatched OAuth session before calling the provider    0.03s
+  ✓ it persists an approved mocked OAuth connection with hidden encrypt… 0.03s
+  ✓ it rejects invalid Google OAuth state without persisting or exchang… 0.02s
+  ✓ it queues Calendar jobs after commit and delegates only when autosy… 0.01s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.03s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it accepts multiple project assignees and refuses a non-member       0.18s
+
+   PASS  Tests\Feature\AttachmentTest
+  ✓ it creates and polymorphically links an attachment to a project      0.02s
+  ✓ it links an attachment to a ticket and authorizes its uploader       0.02s
+
+  Tests:    25 passed (136 assertions)
+  Duration: 2.42s

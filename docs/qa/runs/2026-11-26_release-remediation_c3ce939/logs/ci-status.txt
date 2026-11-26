@@ -1,0 +1,46 @@
+Verified UTC: 2026-11-26T10:42:16.495703+00:00
+
+https://github.com/moozunch/Prism/actions/runs/45040095703
+sqlite completed successfully https://github.com/moozunch/Prism/actions/runs/45040095703/job/137262379252
+browser completed successfully https://github.com/moozunch/Prism/actions/runs/45040095703/job/137262378809
+prism-browser-evidence https://github.com/moozunch/Prism/actions/runs/45040095703/artifacts/14761271607
+prism-pest-results https://github.com/moozunch/Prism/actions/runs/45040095703/artifacts/14760909299
+
+https://github.com/moozunch/Prism/actions/runs/45802687847
+sqlite failed https://github.com/moozunch/Prism/actions/runs/45802687847/job/139849715178
+browser completed successfully https://github.com/moozunch/Prism/actions/runs/45802687847/job/139849715590
+Composer advisory symfony/http-foundation PKSA-qgp8-6q73-5w6n null
+Composer advisory symfony/http-foundation PKSA-7b9s-mkdg-qfhs null
+Composer advisory symfony/http-foundation PKSA-nxjs-s6hn-vb6m null
+Composer advisory symfony/html-sanitizer PKSA-n87g-t5cn-m1yq null
+Composer advisory symfony/html-sanitizer PKSA-4z5q-y2w8-bwqq null
+Composer advisory symfony/html-sanitizer PKSA-wwnc-rwy3-v11m null
+Composer advisory symfony/html-sanitizer PKSA-8dv1-1nwm-344v null
+Composer advisory phpseclib/phpseclib PKSA-h7cz-q7zq-mdkt null
+Composer advisory league/csv PKSA-kwst-yd6p-pksp null
+Dependency audit npm exit 0, Composer exit 1
+prism-browser-evidence https://github.com/moozunch/Prism/actions/runs/45802687847/artifacts/15108710669
+prism-pest-results https://github.com/moozunch/Prism/actions/runs/45802687847/artifacts/15108156747
+
+https://github.com/moozunch/Prism/actions/runs/45802974135
+sqlite failed https://github.com/moozunch/Prism/actions/runs/45802974135/job/139850710569
+browser completed successfully https://github.com/moozunch/Prism/actions/runs/45802974135/job/139850710187
+Composer advisory symfony/yaml PKSA-nktx-f1n1-b4yd null
+Composer advisory symfony/routing PKSA-y8c5-1b7f-r1gj null
+Composer advisory symfony/routing PKSA-2vy6-qchn-f13r null
+Composer advisory symfony/routing PKSA-pbtx-4qgh-mmkh null
+Composer advisory symfony/mime PKSA-wtxr-p26d-nn42 medium
+Composer advisory symfony/mailer PKSA-9r8k-3vgs-8f3v null
+Composer advisory symfony/mailer PKSA-vqxj-j8fm-1q3k null
+Composer advisory symfony/http-kernel PKSA-3gxv-7xhq-mgmz null
+Composer advisory symfony/http-kernel PKSA-k1tg-4k6j-w4xf null
+Dependency audit npm exit 0, Composer exit 1
+prism-browser-evidence https://github.com/moozunch/Prism/actions/runs/45802974135/artifacts/15108885811
+prism-pest-results https://github.com/moozunch/Prism/actions/runs/45802974135/artifacts/15107308351
+
+https://github.com/moozunch/Prism/actions/runs/45803416420
+sqlite completed successfully https://github.com/moozunch/Prism/actions/runs/45803416420/job/139852266932
+browser completed successfully https://github.com/moozunch/Prism/actions/runs/45803416420/job/139852266425
+prism-browser-evidence https://github.com/moozunch/Prism/actions/runs/45803416420/artifacts/15107658426
+prism-pest-results https://github.com/moozunch/Prism/actions/runs/45803416420/artifacts/15107897564
+Audit locked dependencies: success (npm and native Composer exit 0)

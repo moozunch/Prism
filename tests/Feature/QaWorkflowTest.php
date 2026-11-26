@@ -167,15 +167,26 @@ it('queues Calendar jobs after commit and delegates only when autosync is enable
     $job->handle($service);
 });
 
-it('persists a failed Calendar sync without changing the task', function (int $statusCode) {
+it('persists a failed Calendar sync without changing the task', function (int|string $failure) {
     config(['services.google.calendar.enabled' => true]);
-    Http::fake(['https://www.googleapis.com/calendar/v3/calendars/*/events*' => Http::response([], $statusCode)]);
+    $requestAttempts = 0;
+    Http::fake([
+        'https://www.googleapis.com/calendar/v3/calendars/*/events*' => function ($request) use ($failure, &$requestAttempts) {
+            $requestAttempts++;
+
+            return $failure === 'timeout'
+                ? Http::failedConnection('QA simulated timeout')($request)
+                : Http::response([], $failure);
+        },
+        'https://oauth2.googleapis.com/token' => Http::response(['error' => 'invalid_grant'], 400),
+    ]);
     $organizer = qaMember();
     $organizer->googleConnection()->create([
         'google_account_id' => 'qa-calendar-organizer',
         'google_email' => 'qa-calendar@example.test',
         'access_token' => 'fake-calendar-access',
-        'expires_at' => now()->addHour(),
+        'refresh_token' => 'fake-calendar-refresh',
+        'expires_at' => $failure === 'refresh' ? now()->subHour() : now()->addHour(),
         'scopes' => ['https://www.googleapis.com/auth/calendar.events'],
     ]);
     $project = Project::factory()->create();
@@ -191,11 +202,17 @@ it('persists a failed Calendar sync without changing the task', function (int $s
 
     expect(app(GoogleCalendarService::class)->createTaskDeadline($task))->toBeNull()
         ->and($task->fresh()->getAttributes())->toEqual($original);
-    Http::assertSentCount(1);
-    $this->assertDatabaseHas('google_calendar_events', [
-        'ticket_id' => $task->id, 'sync_status' => 'failed', 'google_event_id' => null,
-    ]);
-})->with([403, 429, 503]);
+    if ($failure === 'refresh') {
+        expect($requestAttempts)->toBe(0);
+        Http::assertSent(fn ($request) => $request->url() === 'https://oauth2.googleapis.com/token');
+        $this->assertDatabaseEmpty('google_calendar_events');
+    } else {
+        expect($requestAttempts)->toBe(1);
+        $this->assertDatabaseHas('google_calendar_events', [
+            'ticket_id' => $task->id, 'sync_status' => 'failed', 'google_event_id' => null,
+        ]);
+    }
+})->with([403, 429, 503, 'timeout', 'refresh']);
 
 it('accepts multiple project assignees and refuses a non-member', function () {
     $project = Project::factory()->create();

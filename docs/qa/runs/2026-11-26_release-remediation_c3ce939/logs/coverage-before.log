@@ -1,0 +1,83 @@
+   FAIL  Tests\Feature\ReleaseReadinessTest
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.40s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ⨯ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ⨯ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ⨯ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it rejects direct project edit outside the project manager membersh… 0.16s
+  ⨯ it moves an assigned task only to statuses of its own project        0.07s
+  ✓ it filters report deadlines without including tasks from a hidden p… 0.11s
+  ✓ it rejects a duplicate member email and lets an admin reassign a di… 0.14s
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\ReleaseReadinessTest > it scopes project mutation g…
+  Failed asserting that true is identical to false.
+
+  at tests/Feature/ReleaseReadinessTest.php:31
+     27▕     $inside->members()->attach($user);
+     28▕
+     29▕     foreach (['view', 'update', 'delete'] as $ability) {
+     30▕         expect($user->can($ability, $inside))->toBeTrue()
+  ➜  31▕             ->and($user->can($ability, $outside))->toBe($organizationWide);
+     32▕     }
+     33▕ })->with([
+     34▕     'technical admin' => ['super_admin', true],
+     35▕     'organization admin' => ['admin', true],
+
+  1   tests/Feature/ReleaseReadinessTest.php:31
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\ReleaseReadinessTest > it scopes project mutation g…
+  Failed asserting that true is identical to false.
+
+  at tests/Feature/ReleaseReadinessTest.php:31
+     27▕     $inside->members()->attach($user);
+     28▕
+     29▕     foreach (['view', 'update', 'delete'] as $ability) {
+     30▕         expect($user->can($ability, $inside))->toBeTrue()
+  ➜  31▕             ->and($user->can($ability, $outside))->toBe($organizationWide);
+     32▕     }
+     33▕ })->with([
+     34▕     'technical admin' => ['super_admin', true],
+     35▕     'organization admin' => ['admin', true],
+
+  1   tests/Feature/ReleaseReadinessTest.php:31
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\ReleaseReadinessTest > it scopes project mutation g…
+  Failed asserting that true is identical to false.
+
+  at tests/Feature/ReleaseReadinessTest.php:31
+     27▕     $inside->members()->attach($user);
+     28▕
+     29▕     foreach (['view', 'update', 'delete'] as $ability) {
+     30▕         expect($user->can($ability, $inside))->toBeTrue()
+  ➜  31▕             ->and($user->can($ability, $outside))->toBe($organizationWide);
+     32▕     }
+     33▕ })->with([
+     34▕     'technical admin' => ['super_admin', true],
+     35▕     'organization admin' => ['admin', true],
+
+  1   tests/Feature/ReleaseReadinessTest.php:31
+
+  ────────────────────────────────────────────────────────────────────────────
+   FAILED  Tests\Feature\ReleaseReadinessTest > it moves an assigned task on…
+  Failed asserting that 3 is identical to 1.
+
+  at tests/Feature/ReleaseReadinessTest.php:71
+     67▕     $task->assignees()->attach($member);
+     68▕
+     69▕     $board = Livewire::actingAs($member)->test(ProjectBoard::class, ['project_id' => $project->id]);
+     70▕     $board->call('moveTicket', $task->id, $foreign->id)->assertSuccessful();
+  ➜  71▕     expect($task->fresh()->ticket_status_id)->toBe($todo->id);
+     72▕     $this->assertDatabaseMissing('ticket_histories', ['ticket_id' => $task->id, 'ticket_status_id' => $foreign->id]);
+     73▕
+     74▕     $board->call('moveTicket', $task->id, $done->id)->assertSuccessful();
+     75▕     expect($task->fresh()->ticket_status_id)->toBe($done->id)
+
+  1   tests/Feature/ReleaseReadinessTest.php:71
+
+
+  Tests:    4 failed, 5 passed (44 assertions)
+  Duration: 1.03s
+
+EXIT 1
