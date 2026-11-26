@@ -12,6 +12,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AttachmentController extends Controller
 {
+    private const INLINE_MIME_TYPES = [
+        'application/pdf',
+        'image/gif',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'text/plain',
+    ];
+
     public function view(
         Attachment $attachment,
         GoogleDriveService $googleDriveService
@@ -60,14 +69,18 @@ class AttachmentController extends Controller
             404
         );
 
+        $mimeType = $disk->mimeType($attachment->file_path);
+        $inline = in_array($mimeType, self::INLINE_MIME_TYPES, true);
+
         return $disk->response(
             $attachment->file_path,
             $attachment->original_name,
             [
+                'Content-Type' => $inline ? $mimeType : 'application/octet-stream',
                 'Cache-Control' => 'private, no-store',
                 'X-Content-Type-Options' => 'nosniff',
             ],
-            'inline'
+            $inline ? 'inline' : 'attachment'
         );
     }
 }
