@@ -1,0 +1,114 @@
+   PASS  Tests\Unit\ExampleTest
+  ✓ that true is true
+
+   PASS  Tests\Feature\AttachmentTest
+  ✓ it creates and polymorphically links an attachment to a project      0.29s
+  ✓ it links an attachment to a ticket and authorizes its uploader       0.02s
+
+   PASS  Tests\Feature\DashboardNotificationTest
+  ✓ it does not grant organization-wide dashboard metrics to a member    0.02s
+  ✓ it grants organization-wide dashboard metrics only to organization…  0.01s
+  ✓ it notifies project participants about comments using task terminol… 0.02s
+
+   PASS  Tests\Feature\DivisionManagementTest
+  ✓ it creates and updates a division                                    0.03s
+  ✓ it allows admin and super admin users to manage divisions with ('ad… 0.12s
+  ✓ it allows admin and super admin users to manage divisions with ('su… 0.06s
+  ✓ it denies members from managing divisions                            0.02s
+
+   PASS  Tests\Feature\ExampleTest
+  ✓ it returns a successful response                                     0.02s
+
+   PASS  Tests\Feature\GoogleCalendarAutoSyncTest
+  ✓ testing environment is isolated                                      0.02s
+  ✓ auto sync does not run when disabled                                 0.03s
+  ✓ auto sync skips missing task                                         0.02s
+  ✓ auto sync creates event for assignee                                 0.04s
+  ✓ auto sync updates existing event without duplicates                  0.03s
+  ✓ auto sync cancels event when deadline removed                        0.02s
+
+   PASS  Tests\Feature\GoogleIntegrationTest
+  ✓ it isolates Google Calendar failures from core task handling         0.02s
+  ✓ it isolates Google Drive failures and returns authorized file refer… 0.03s
+
+   PASS  Tests\Feature\OrganizationInformationTest
+  ✓ it creates and updates the deployment organization profile           0.02s
+  ✓ it allows admin and super admin users to access organization inform… 0.02s
+  ✓ it allows admin and super admin users to access organization inform… 0.02s
+  ✓ it denies organization information access to members                 0.02s
+
+   PASS  Tests\Feature\PerformanceQueriesTest
+  ✓ it batches progress without using a constrained tickets collection…  0.02s
+  ✓ it retains project and reporting visibility while preloading progre… 0.03s
+  ✓ it loads board assignees in one query without users assigned only e… 0.03s
+  ✓ it calculates ordered task progress with one status lookup per time… 0.02s
+  ✓ it keeps member dashboard totals fresh and restricted to their proj… 0.03s
+  ✓ it groups monthly chart values without exposing another members tas… 0.04s
+  ✓ it renders optimized pages and handles timeline Livewire requests f… 0.49s
+
+   PASS  Tests\Feature\PolicyOwnershipTest
+  ✓ it does not let a user update a ticket outside their projects even…  0.03s
+  ✓ it lets a project member update a ticket in their own project        0.02s
+  ✓ it does not let a user view a ticket comment outside their projects  0.02s
+  ✓ it does not let a user view a project they are not a member of       0.02s
+  ✓ it does not let a user view another user's notification              0.03s
+
+   PASS  Tests\Feature\PrismRoleTest
+  ✓ it seeds the PRISM business roles without removing legacy roles      0.02s
+  ✓ it supports assigning PRISM roles and checking them on User          0.03s
+  ✓ it keeps organization admin distinct from the technical super admin… 0.02s
+
+   PASS  Tests\Feature\ProfileManagementTest
+  ✓ it allows a verified regular user to access the native profile page  0.05s
+  ✓ it uses the native profile page without role or division fields      0.02s
+
+   PASS  Tests\Feature\ProjectBoardMembershipTest
+  ✓ it does not load a project the user is not a member of when mountin… 0.04s
+  ✓ it does not select a project the user is not a member of via select… 0.03s
+  ✓ it does load a project the user is a member of                       0.04s
+
+   PASS  Tests\Feature\ProjectStatusTest
+  ✓ it creates a project with a draft status and updates its status      0.02s
+  ✓ it calculates project progress from completed ticket statuses        0.01s
+
+   PASS  Tests\Feature\ProjectTeamTest
+  ✓ it attaches a user to a project with a project responsibility        0.02s
+
+   PASS  Tests\Feature\QaWorkflowTest
+  ✓ it requests a reset link for a verified member without sending real… 0.24s
+  ✓ it uses a valid reset token once and rejects an invalid token        0.27s
+  ✓ it protects local attachment content and distinguishes missing file… 0.04s
+  ✓ it rejects an unmatched OAuth session before calling the provider    0.03s
+  ✓ it persists an approved mocked OAuth connection with hidden encrypt… 0.02s
+  ✓ it rejects invalid Google OAuth state without persisting or exchang… 0.03s
+  ✓ it queues Calendar jobs after commit and delegates only when autosy… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.03s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it persists a failed Calendar sync without changing the task with (… 0.02s
+  ✓ it accepts multiple project assignees and refuses a non-member       0.22s
+
+   PASS  Tests\Feature\ReleaseReadinessTest
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.03s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it rejects direct project edit outside the project manager membersh… 0.08s
+  ✓ it moves an assigned task only to statuses of its own project        0.09s
+  ✓ it filters report deadlines without including tasks from a hidden p… 0.30s
+  ✓ it rejects a duplicate member email and lets an admin reassign a di… 0.14s
+
+   PASS  Tests\Feature\UserCanAccessPanelTest
+  ✓ it denies panel access to a user with no role even if email is veri… 0.02s
+  ✓ it denies panel access to a user with a role but an unverified emai… 0.02s
+  ✓ it allows panel access to a user with a verified email and a role    0.02s
+
+   PASS  Tests\Feature\UserDivisionTest
+  ✓ it associates a user with a division                                 0.02s
+  ✓ it allows a user to have no division assigned                        0.01s
+  ✓ it clears the user division assignment when the division is deleted  0.01s
+
+  Tests:    74 passed (240 assertions)
+  Duration: 3.86s

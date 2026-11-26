@@ -1,0 +1,195 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load remote build context
+#1 DONE 0.2s
+
+#1 [internal] load remote build context
+#1 DONE 0.2s
+
+#2 copy /context /
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/php:8.4-fpm
+#3 DONE 0.0s
+
+#4 [internal] load metadata for docker.io/library/composer:latest
+#4 DONE 2.9s
+
+#5 [stage-0 1/7] FROM docker.io/library/php:8.4-fpm
+#5 DONE 0.0s
+
+#6 FROM docker.io/library/composer:latest@sha256:0049ce90b432795bf413a738b073963ada1a689e1a8708104684baafe94586ec
+#6 resolve docker.io/library/composer:latest@sha256:0049ce90b432795bf413a738b073963ada1a689e1a8708104684baafe94586ec done
+#6 sha256:0e73c2a5d3a29429acb81472127679827f91f5f0625d1589ee32fc179b989df2 0B / 1.45MB 0.1s
+#6 sha256:f4dd95abfaf930955fe55a3a224ce434ecfa2bd3c36f04bf221f5860c2f59338 12.11kB / 12.11kB done
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 0B / 32.26MB 0.1s
+#6 sha256:bbdece32b8c1ccf3acd53bfe2c90a43e9433f49c9274a938176a8480b6344e3f 0B / 260B 0.1s
+#6 sha256:00c34bf107ea859ce808b598ac1edad6ad3879136fc4425c8c8ab3cfb45b1b83 3.61kB / 3.61kB done
+#6 sha256:0049ce90b432795bf413a738b073963ada1a689e1a8708104684baafe94586ec 10.12kB / 10.12kB done
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 3.15MB / 32.26MB 1.0s
+#6 sha256:bbdece32b8c1ccf3acd53bfe2c90a43e9433f49c9274a938176a8480b6344e3f 260B / 260B 1.0s done
+#6 sha256:818926440cc3c4cd76b5c09e532f13cd289b6ae0dc273e92d1c67a6a46fc68a6 0B / 420B 1.0s
+#6 sha256:0e73c2a5d3a29429acb81472127679827f91f5f0625d1589ee32fc179b989df2 1.05MB / 1.45MB 1.1s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 5.24MB / 32.26MB 1.2s
+#6 sha256:7670ac95c054d202cbbbd210fe1853f891e58463b0b019ce7085de928976d1c6 0B / 93B 1.2s
+#6 sha256:0e73c2a5d3a29429acb81472127679827f91f5f0625d1589ee32fc179b989df2 1.45MB / 1.45MB 1.2s done
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 7.34MB / 32.26MB 1.4s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 9.44MB / 32.26MB 1.6s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 11.53MB / 32.26MB 1.8s
+#6 sha256:818926440cc3c4cd76b5c09e532f13cd289b6ae0dc273e92d1c67a6a46fc68a6 420B / 420B 1.7s done
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 14.68MB / 32.26MB 2.1s
+#6 sha256:7670ac95c054d202cbbbd210fe1853f891e58463b0b019ce7085de928976d1c6 93B / 93B 2.0s done
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 16.78MB / 32.26MB 2.3s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 18.87MB / 32.26MB 2.6s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 20.97MB / 32.26MB 2.8s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 24.12MB / 32.26MB 3.1s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 26.21MB / 32.26MB 3.3s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 28.31MB / 32.26MB 3.5s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 30.41MB / 32.26MB 3.7s
+#6 sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 32.26MB / 32.26MB 3.9s done
+#6 extracting sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719
+#6 extracting sha256:eb51f96e996c2422e157e124689106141fb1a210554a74f7d445050026e1e719 1.2s done
+#6 extracting sha256:bbdece32b8c1ccf3acd53bfe2c90a43e9433f49c9274a938176a8480b6344e3f
+#6 extracting sha256:bbdece32b8c1ccf3acd53bfe2c90a43e9433f49c9274a938176a8480b6344e3f done
+#6 extracting sha256:0e73c2a5d3a29429acb81472127679827f91f5f0625d1589ee32fc179b989df2
+#6 extracting sha256:0e73c2a5d3a29429acb81472127679827f91f5f0625d1589ee32fc179b989df2 0.5s done
+#6 extracting sha256:818926440cc3c4cd76b5c09e532f13cd289b6ae0dc273e92d1c67a6a46fc68a6 done
+#6 extracting sha256:7670ac95c054d202cbbbd210fe1853f891e58463b0b019ce7085de928976d1c6
+#6 extracting sha256:7670ac95c054d202cbbbd210fe1853f891e58463b0b019ce7085de928976d1c6 done
+#6 DONE 7.3s
+
+#7 [stage-0 2/7] RUN apt-get update && apt-get install -y     libpng-dev     libonig-dev     libxml2-dev     libicu-dev     libzip-dev     zip     unzip     git     curl
+#7 CACHED
+
+#8 [stage-0 3/7] RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+#8 CACHED
+
+#9 [stage-0 4/7] RUN docker-php-ext-install -j2 pdo_mysql mbstring exif pcntl bcmath gd intl zip opcache
+#9 CACHED
+
+#10 [stage-0 5/7] COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+#10 DONE 4.0s
+
+#11 [stage-0 6/7] WORKDIR /var/www
+#11 DONE 0.8s
+
+#12 [stage-0 7/7] COPY --chown=www-data:www-data . /var/www
+#12 DONE 0.8s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.9s done
+#13 writing image sha256:76517e41ac770853c737a750ddecefb726358479ad956cab13bc43f6414d676a done
+#13 naming to docker.io/library/prism-qa:024bd14 done
+#13 DONE 1.0s
+[26-Nov-2026 10:21:19] NOTICE: configuration file /usr/local/etc/php-fpm.conf test is successful
+Checking platform requirements for packages in the vendor dir
+composer-plugin-api  2.11.0     success
+composer-runtime-api 2.2.2      success
+ext-ctype            *          success provided by symfony/polyfill-ctype
+ext-date             8.4.28     success
+ext-dom              20031129   success
+ext-fileinfo         8.4.28     success
+ext-filter           8.4.28     success
+ext-hash             8.4.28     success
+ext-iconv            8.4.28     success
+ext-intl             8.4.28     success
+ext-json             8.4.28     success
+ext-libxml           8.4.28     success
+ext-mbstring         *          success provided by symfony/polyfill-mbstring
+ext-openssl          8.4.28     success
+ext-pcre             8.4.28     success
+ext-phar             8.4.28     success
+ext-reflection       8.4.28     success
+ext-session          8.4.28     success
+ext-simplexml        8.4.28     success
+ext-tokenizer        8.4.28     success
+ext-xml              8.4.28     success
+ext-xmlreader        8.4.28     success
+ext-xmlwriter        8.4.28     success
+ext-zip              1.22.8     success
+php                  8.4.28     success
+8.0.46
+{
+    "project_progress_20_rows": {
+        "ms": 1.838,
+        "queries": 1,
+        "db_ms": 0.84
+    },
+    "reporting_25_rows": {
+        "ms": 3.318,
+        "queries": 4,
+        "db_ms": 1.49
+    },
+    "dashboard_project_timeline": {
+        "ms": 30.606,
+        "queries": 6,
+        "db_ms": 3
+    },
+    "board_assignee_options": {
+        "ms": 0.533,
+        "queries": 1,
+        "db_ms": 0.34
+    },
+    "task_timeline_data": {
+        "ms": 3.166,
+        "queries": 3,
+        "db_ms": 1.27
+    },
+    "peak_memory_bytes": 55050240
+}
+
+   INFO  Nothing to migrate.
+
+
+  Migration name .............................................. Batch / Status
+  0001_01_01_000000_create_users_table ............................... [1] Ran
+  0001_01_01_000001_create_cache_table ............................... [1] Ran
+  0001_01_01_000002_create_jobs_table ................................ [1] Ran
+  2025_03_02_200055_create_projects_table ............................ [1] Ran
+  2025_03_02_200109_create_project_members_table ..................... [1] Ran
+  2025_03_02_200213_create_ticket_statuses_table ..................... [1] Ran
+  2025_03_02_200246_create_tickets_table ............................. [1] Ran
+  2025_03_13_154334_add_uuid_to_ticket_table ......................... [1] Ran
+  2025_03_13_223706_create_permission_tables ......................... [1] Ran
+  2025_03_28_144500_create_ticket_histories_table .................... [1] Ran
+  2025_04_11_173545_create_ticket_comments_table ..................... [1] Ran
+  2025_05_06_220233_add_sort_order_to_ticket_statuses_table .......... [1] Ran
+  2025_05_06_221002_add_sort_color_to_ticket_statuses_table .......... [1] Ran
+  2025_05_10_202453_add_start_date_end_date_to_project ............... [1] Ran
+  2025_06_24_212547_add_ticket_users_table_and_created_by_column ..... [1] Ran
+  2025_06_24_212750_migrate_existing_user_id_data .................... [1] Ran
+  2025_06_24_212838_drop_user_id_column_from_tickets ................. [1] Ran
+  2025_06_29_052227_change_tickets_description_to_longtext ........... [1] Ran
+  2025_07_04_164429_create_ticket_priorities_table ................... [1] Ran
+  2025_07_04_164558_add_priority_id_to_tickets_table ................. [1] Ran
+  2025_07_16_182905_add_pinned_to_projects_table ..................... [1] Ran
+  2025_07_30_211411_create_project_notes_table ....................... [1] Ran
+  2025_08_08_051806_create_notifications_table ....................... [1] Ran
+  2025_08_17_041650_add_start_date_to_tickets_table .................. [1] Ran
+  2025_08_17_041901_populate_start_date_from_created_at_in_tickets_table  [1] Ran
+  2025_08_23_214007_add_is_completed_to_ticket_statuses_table ........ [1] Ran
+  2025_08_25_174118_add_google_id_to_users_table ..................... [1] Ran
+  2025_09_16_051002_add_performance_indexes .......................... [1] Ran
+  2025_11_04_181918_add_color_to_projects_table ...................... [1] Ran
+  2025_11_06_052000_create_settings_table ............................ [1] Ran
+  2025_11_08_063526_add_user_id_to_settings_table .................... [1] Ran
+  2026_09_23_000000_create_organizations_table ....................... [1] Ran
+  2026_09_23_000001_create_divisions_table ........................... [1] Ran
+  2026_09_23_000002_add_division_id_to_users_table ................... [1] Ran
+  2026_09_23_000003_add_status_to_projects_table ..................... [1] Ran
+  2026_09_23_000004_add_role_to_project_members_table ................ [1] Ran
+  2026_09_25_000005_create_attachments_table ......................... [1] Ran
+  2026_11_13_190705_create_google_connections_table .................. [1] Ran
+  2026_11_13_210130_add_calendar_email_to_users_table ................ [1] Ran
+  2026_11_13_213148_create_google_calendar_events_table .............. [1] Ran
+  2026_11_16_105738_add_google_drive_fields_to_attachments_table ..... [1] Ran
+
+
+   INFO  Seeding database.
+
+Disposable Filament admin can access panel.
+/ 200
+/admin 200
+/admin/login 200
+Compiled theme 200

@@ -1,0 +1,11 @@
+Loading composer repositories with package information
+Updating dependencies
+Lock file operations: 0 installs, 5 updates, 0 removals
+  - Upgrading symfony/http-kernel (v7.4.19 => v7.4.24)
+  - Upgrading symfony/mailer (v7.4.19 => v7.4.24)
+  - Upgrading symfony/mime (v7.4.19 => v7.4.24)
+  - Upgrading symfony/routing (v7.4.18 => v7.4.24)
+  - Upgrading symfony/yaml (v8.1.6 => v8.1.12)
+Writing lock file
+114 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!

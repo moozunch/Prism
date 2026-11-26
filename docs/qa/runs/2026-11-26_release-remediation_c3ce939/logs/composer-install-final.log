@@ -1,0 +1,48 @@
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Package operations: 0 installs, 5 updates, 0 removals
+    0 [>---------------------------]
+    0 [->--------------------------]
+  - Upgrading symfony/routing (v7.4.18 => v7.4.24): Extracting archive
+  - Upgrading symfony/mime (v7.4.19 => v7.4.24): Extracting archive
+  - Upgrading symfony/mailer (v7.4.19 => v7.4.24): Extracting archive
+  - Upgrading symfony/http-kernel (v7.4.19 => v7.4.24): Extracting archive
+  - Upgrading symfony/yaml (v8.1.6 => v8.1.12): Extracting archive
+ 0/5 [>---------------------------]   0%
+ 5/5 [============================] 100%
+Generating optimized autoload files
+114 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+
+   INFO  Discovering packages.
+
+  anourvalar/eloquent-serialize ......................................... DONE
+  bezhansalleh/filament-plugin-essentials ............................... DONE
+  bezhansalleh/filament-shield .......................................... DONE
+  blade-ui-kit/blade-heroicons .......................................... DONE
+  blade-ui-kit/blade-icons .............................................. DONE
+  filament/actions ...................................................... DONE
+  filament/filament ..................................................... DONE
+  filament/forms ........................................................ DONE
+  filament/infolists .................................................... DONE
+  filament/notifications ................................................ DONE
+  filament/query-builder ................................................ DONE
+  filament/schemas ...................................................... DONE
+  filament/support ...................................................... DONE
+  filament/tables ....................................................... DONE
+  filament/upgrade ...................................................... DONE
+  filament/widgets ...................................................... DONE
+  kirschbaum-development/eloquent-power-joins ........................... DONE
+  laravel/octane ........................................................ DONE
+  laravel/pail .......................................................... DONE
+  laravel/sail .......................................................... DONE
+  laravel/socialite ..................................................... DONE
+  laravel/tinker ........................................................ DONE
+  livewire/livewire ..................................................... DONE
+  nesbot/carbon ......................................................... DONE
+  nunomaduro/collision .................................................. DONE
+  nunomaduro/termwind ................................................... DONE
+  pestphp/pest-plugin-laravel ........................................... DONE
+  ryangjchandler/blade-capture-directive ................................ DONE
+  solution-forest/tab-layout-plugin ..................................... DONE
+  spatie/laravel-permission ............................................. DONE

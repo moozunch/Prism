@@ -1,0 +1,13 @@
+   PASS  Tests\Feature\ReleaseReadinessTest
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.43s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.03s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it scopes project mutation grants to membership for non-administrat… 0.02s
+  ✓ it rejects direct project edit outside the project manager membersh… 0.19s
+  ✓ it moves an assigned task only to statuses of its own project        0.09s
+  ✓ it filters report deadlines without including tasks from a hidden p… 0.15s
+  ✓ it rejects a duplicate member email and lets an admin reassign a di… 0.13s
+
+  Tests:    9 passed (54 assertions)
+  Duration: 1.23s
