@@ -49,7 +49,8 @@ jobs:
                 "$RUNNER_TEMP/prism-qa/npm-audit.json"
             fi
             if [ "$composer_status" -ne 0 ]; then
-              jq -r '(.advisories // {}) | to_entries[] | .key as $pkg | .value[] | "::error title=Composer advisory::\($pkg) \(.advisoryId) \(.severity)"' \
+              jq -r '[(.advisories // {}) | to_entries[] | .key as $pkg | .value[] | "\($pkg) \(.advisoryId)"] |
+                if length > 0 then "::error title=Composer advisories::" + join(", ") else empty end' \
                 "$RUNNER_TEMP/prism-qa/composer-audit.json"
               jq -r '(.abandoned // {}) | keys[] | "::error title=Composer abandoned package::\(.)"' \
                 "$RUNNER_TEMP/prism-qa/composer-audit.json"
