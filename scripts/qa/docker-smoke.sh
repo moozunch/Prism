@@ -111,7 +111,7 @@ restore_check="$(docker exec "$name-db" sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" 
 test "$restore_check" = 200
 printf 'Logical restore into disposable MySQL schema verified (%s tasks).\n' "$restore_check"
 
-docker exec "$name-app" chown -R www-data:www-data storage bootstrap/cache
+docker exec "$name-app" chown -R www-data:www-data vendor storage bootstrap/cache public/build
 mkdir -p "$scratch/nginx-root/var/www/public"
 docker cp "$name-app:/var/www/public/." "$scratch/nginx-root/var/www/public"
 chmod -R a+rX "$scratch/nginx-root"
@@ -119,7 +119,7 @@ docker create --name "$name-web" --network "$name" nginx:alpine >/dev/null
 web_created=true
 docker cp nginx/conf.d/app.conf "$name-web:/etc/nginx/conf.d/default.conf"
 docker cp "$scratch/nginx-root/var/." "$name-web:/var"
-docker exec -d "$name-app" php-fpm -F
+docker exec -d "$name-app" php-fpm -d display_errors=0 -F
 docker start "$name-web" >/dev/null
 docker exec "$name-web" nginx -t
 docker exec -u nginx "$name-web" test -r /var/www/public/index.php
