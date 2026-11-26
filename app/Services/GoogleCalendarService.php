@@ -6,6 +6,7 @@ use App\Models\GoogleCalendarEvent;
 use App\Models\GoogleConnection;
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -127,6 +128,8 @@ class GoogleCalendarService
 
             return null;
         }
+
+        $calendarEvent = null;
 
         try {
             $attendeesByEmail = [];
@@ -344,6 +347,10 @@ class GoogleCalendarService
             return $event;
 
         } catch (Throwable $exception) {
+            if ($exception instanceof ConnectionException) {
+                $calendarEvent?->update(['sync_status' => 'failed']);
+            }
+
             Log::error(
                 'Google Calendar integration failed.',
                 [
