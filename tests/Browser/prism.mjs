@@ -164,6 +164,19 @@ try {
             await show(page, 'QA Visible Task');
             await show(page, 'To Do');
         });
+        await scenario('TC-10', 'BOARD_MOVE', 'member', 'Dragging the assigned task to Done persists after reloading', async page => {
+            await login(page, 'member');
+            const path = '/admin/project-board/' + fixtures.visibleProject;
+            await open(page, path);
+            const task = page.locator('[data-ticket-id="' + fixtures.visibleTask + '"][draggable="true"]');
+            const done = page.locator('[data-status-id="' + fixtures.visibleDone + '"]');
+            await task.waitFor();
+            assert.equal(await done.locator('[data-ticket-id]').count(), 0);
+            await task.dragTo(done, { targetPosition: { x: 40, y: 50 } });
+            await done.getByText('QA Visible Task', { exact: true }).waitFor({ timeout: 7000 });
+            await open(page, path);
+            await done.getByText('QA Visible Task', { exact: true }).waitFor();
+        });
         await scenario('TC-11', 'ASSIGNEE', 'member', 'Task detail shows the assigned member', async page => {
             await login(page, 'member');
             await open(page, '/admin/tasks/' + fixtures.visibleTask);

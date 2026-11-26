@@ -9,7 +9,9 @@ image="prism-qa:$(git rev-parse --short HEAD)"
 network_started=false
 mysql_started=false
 app_started=false
+web_created=false
 cleanup() {
+    if "$web_created"; then docker rm -fv "$name-web" >/dev/null || true; fi
     if "$app_started"; then docker rm -fv "$name-app" >/dev/null; fi
     if "$mysql_started"; then docker rm -fv "$name-db" >/dev/null; fi
     if "$network_started"; then docker network rm "$name" >/dev/null; fi
@@ -30,7 +32,7 @@ cat > "$scratch/app.env" <<EOF
 APP_ENV=testing
 APP_DEBUG=false
 APP_KEY=base64:$(openssl rand -base64 32)
-APP_URL=http://127.0.0.1:8000
+APP_URL=http://$name-web
 DB_CONNECTION=mysql
 DB_URL=
 DB_HOST=$name-db
@@ -52,7 +54,7 @@ network_started=true
 docker run -d --name "$name-db" --network "$name" --tmpfs /var/lib/mysql \
     --env-file "$scratch/mysql.env" mysql:8.0 >/dev/null
 mysql_started=true
-docker run -d --name "$name-app" --network "$name" --env-file "$scratch/app.env" \
+docker run -d --name "$name-app" --network "$name" --network-alias app --env-file "$scratch/app.env" \
     "$image" sleep infinity >/dev/null
 app_started=true
 docker cp vendor "$name-app:/var/www/vendor"
@@ -84,15 +86,32 @@ docker exec "$name-app" php -r '
     if (! $user->canAccessPanel(Filament\Facades\Filament::getPanel("admin"))) exit(1);
     echo "Disposable Filament admin can access panel.", PHP_EOL;
 '
-docker exec -d "$name-app" php artisan serve --host=127.0.0.1 --port=8000 --no-reload
-for attempt in {1..20}; do
-    if docker exec "$name-app" curl -fsS -o /dev/null http://127.0.0.1:8000/ 2>/dev/null; then
+docker exec "$name-app" chown -R www-data:www-data storage bootstrap/cache
+mkdir -p "$scratch/nginx-root/var/www/public"
+docker cp "$name-app:/var/www/public/." "$scratch/nginx-root/var/www/public"
+chmod -R a+rX "$scratch/nginx-root"
+docker create --name "$name-web" --network "$name" nginx:alpine >/dev/null
+web_created=true
+docker cp nginx/conf.d/app.conf "$name-web:/etc/nginx/conf.d/default.conf"
+docker cp "$scratch/nginx-root/var/." "$name-web:/var"
+docker exec -d "$name-app" php-fpm -F
+docker start "$name-web" >/dev/null
+docker exec "$name-web" nginx -t
+docker exec -u nginx "$name-web" test -r /var/www/public/index.php
+
+origin="http://$name-web"
+for attempt in {1..30}; do
+    if docker exec "$name-app" curl --noproxy "$name-web" -fsS -o /dev/null "$origin/admin/login" 2>/dev/null; then
         break
     fi
     sleep 0.5
 done
 for path in / /admin /admin/login; do
-    docker exec "$name-app" curl -fsSL -o /dev/null -w "$path %{http_code}\n" "http://127.0.0.1:8000$path"
+    docker exec "$name-app" curl --noproxy "$name-web" -fsSL -o /dev/null -w "$path %{http_code} %{time_total}s\n" "$origin$path"
 done
+docker exec "$name-app" curl --noproxy "$name-web" -fsS "$origin/admin/login" > "$scratch/login.html"
+grep -qi 'Sign in' "$scratch/login.html"
 theme="$(docker exec "$name-app" php -r 'echo json_decode(file_get_contents("public/build/manifest.json"), true)["resources/css/filament/admin/theme.css"]["file"];')"
-docker exec "$name-app" curl -fsS -o /dev/null -w 'Compiled theme %{http_code}\n' "http://127.0.0.1:8000/build/$theme"
+docker exec "$name-app" curl --noproxy "$name-web" -fsS -o /dev/null -w 'Compiled theme %{http_code} %{content_type}\n' "$origin/build/$theme"
+printf 'Nginx to PHP-FPM via FastCGI, 12 anonymous /admin/login requests at concurrency 4\n'
+seq 12 | xargs -n1 -P4 sh -c 'docker exec "$1" curl --noproxy "$2" -fsS -o /dev/null -w "%{http_code} %{time_total}\n" "http://$2/admin/login"' qa "$name-app" "$name-web"

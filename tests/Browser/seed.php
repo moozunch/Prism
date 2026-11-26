@@ -47,6 +47,7 @@ foreach (['Visible' => 'VQA', 'Restricted' => 'RQA'] as $name => $prefix) {
     $project = Project::create(['name' => "QA $name Project", 'ticket_prefix' => $prefix]);
     $project->members()->attach($name === 'Visible' ? $member : $manager);
     $status = $project->ticketStatuses()->create(['name' => 'To Do', 'color' => '#475569', 'sort_order' => 1]);
+    $project->ticketStatuses()->create(['name' => 'Done', 'sort_order' => 2, 'is_completed' => true]);
     $ticket = $project->tickets()->create(['name' => "QA $name Task", 'ticket_status_id' => $status->id]);
     $ticket->assignees()->attach($name === 'Visible' ? $member : $manager);
 }
@@ -66,6 +67,7 @@ $attachment = $visibleTask->attachments()->create([
 file_put_contents(getenv('PRISM_QA_FIXTURES'), json_encode([
     'visibleProject' => $visibleTask->project_id,
     'visibleTask' => $visibleTask->id,
+    'visibleDone' => $visibleTask->project->ticketStatuses()->where('is_completed', true)->value('id'),
     'attachment' => $attachment->id,
     'restrictedProject' => Project::where('ticket_prefix', 'RQA')->value('id'),
 ], JSON_THROW_ON_ERROR));
